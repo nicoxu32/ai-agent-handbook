@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    {"id":"goal","title":"明确业务目标","description":"先判断这件事值得做什么、算不算做成，收集用户目标和材料。","input":"用户需求、业务约束","output":"任务目标、成功标准、允许的操作范围","chapters":[33,34],"traces":["report","execute","recover"]},
+    {"id":"scope","title":"校验身份、范围与任务状态","description":"确认谁在操作、能访问什么、这次任务做到哪一步；条件缺失就先补充。","input":"用户身份、授权、已有任务状态","output":"可用资料范围、有效参数、任务编号","chapters":[27,18],"traces":["report","execute","recover"]},
+    {"id":"plan","title":"编排与调度中心","description":"固定步骤走 Workflow；需要根据反馈选择动作时使用 Agent。拆分角色有明确收益时再考虑多智能体。","input":"目标、有效状态、上一步结果","output":"下一步动作、工具参数、停止或继续的决定","chapters":[3,14,16,20],"traces":["report","execute","recover"]},
+    {"id":"knowledge","title":"知识处理与证据检索","description":"入库：解析 / OCR → 分块 → 向量化与索引。查询：权限和版本过滤 → 向量 + 关键词召回 → 重排 → 带来源的证据。完整统计需另走程序计算。","input":"文件、查询、权限和版本条件","output":"相关证据、引用位置，或可核验的统计结果","chapters":[6,7,8,9,10,11,12,13],"traces":["report"]},
+    {"id":"multimodal","title":"语音与图像处理","description":"会议先转写并保留说话人和时间；图片先识别内容与不确定性。图像生成是另一类任务，需单独检查约束。","input":"音频、图片、扫描材料","output":"带时间或位置线索的内容，或生成素材","chapters":[21,22],"traces":["report"]},
+    {"id":"memory","title":"组织上下文与记忆","description":"把当前有效状态、相关证据和必要偏好送进模型；过期信息不沿用，预算不足时裁剪或压缩。","input":"任务状态、证据、对话、用户偏好","output":"有来源、受上下文预算约束的输入","chapters":[2,18,19],"traces":["report","execute","recover"]},
+    {"id":"model","title":"模型理解与结构化生成","description":"模型理解材料并生成草稿或动作建议。程序校验字段与业务规则；有引用也要核对引用是否支持结论。","input":"提示词、上下文、证据或工具回执","output":"结构化结果、候选答案或工具调用建议","chapters":[1,3,4,5,11],"traces":["report","execute"]},
+    {"id":"check","title":"事实、权限与人工确认","description":"执行前再次校验目标、权限和业务条件。高风险操作展示对象、范围与影响，由用户确认；参数变化后重新确认。","input":"候选结果、拟执行动作及影响范围","output":"允许执行、要求修改、等待确认或拒绝","chapters":[5,27,28,34],"traces":["report","execute","recover"]},
+    {"id":"tools","title":"工具执行与业务系统","description":"运行时执行工具调用，通过 MCP 或直接 API 连接文件和业务服务；无 API 时才评估受控界面自动化。授权与执行结果由程序判断。","input":"已校验参数、有效授权、必要的确认","output":"业务回执、资源标识、错误或状态查询入口","chapters":[15,17,23,24],"traces":["report","execute","recover"]},
+    {"id":"receipt","title":"核验真实状态与恢复","description":"超时先查业务状态，不能直接当成失败重做。有副作用的动作使用幂等标识；部分完成时从检查点恢复或按业务规则补偿。","input":"回执、幂等标识、业务状态","output":"已完成 / 部分完成 / 失败 / 状态未知","chapters":[18,29,30],"traces":["report","execute","recover"]},
+    {"id":"delivery","title":"交付结果并收集反馈","description":"明确哪些已完成、哪些尚未完成，提供结果、来源和可操作的下一步。用任务结果和用户反馈决定后续优化。","input":"经过核验的任务状态和结果","output":"可核对的交付物、反馈与改进线索","chapters":[31,33,36],"traces":["report","execute","recover"]},
+    {"id":"routing","title":"模型服务与流量控制","description":"为每次模型调用选择合适模型，统一鉴权、配额、限流与超时；降级仍需满足任务底线。","input":"任务要求、流量、成本约束","output":"受控的模型调用与降级结果","chapters":[25,26],"traces":["report","execute","recover"]},
+    {"id":"security","title":"全链路安全与隔离","description":"检索、缓存、工具和结果返回都校验租户与权限。网页和文档中的指令视为不可信资料，不能直接授予工具权限。","input":"身份、权限、不可信外部内容","output":"可访问边界、拦截结果、审计线索","chapters":[27,28],"traces":["report","execute","recover"]},
+    {"id":"operations","title":"追踪、评测与版本","description":"保留一次任务的关键调用链；用固定样本比较质量和失败情况，模型、提示词、知识索引与工具版本共同管理。","input":"运行记录、评测样本、版本变更","output":"故障定位、发布依据、回退能力","chapters":[30,31,32],"traces":["report","execute","recover"]},
+    {"id":"value","title":"成本收益与持续优化","description":"统计成功完成一次任务的总成本与人工返工，结合反馈判断改动是否产生价值，而非只看调用量。","input":"任务完成率、费用、耗时、用户反馈","output":"优化优先级、计费依据、价值验证","chapters":[35,36],"traces":["report","execute","recover"]}
+  ],
+  "traces": {
+    "all":{"title":"完整架构","description":"从目标到交付，实线箭头表示主要处理顺序；橙色虚线框表示补充、人工介入或恢复回路。共享能力贯穿各环节。"},
+    "report":{"title":"生成报告","description":"材料经过知识检索或多模态解析，组织上下文后生成草稿；核对事实，需要保存时执行文件工具，最后确认报告与保存状态。"},
+    "execute":{"title":"执行业务操作","description":"从明确对象和范围开始，经调度、参数校验与必要的人工确认后调用工具；用业务回执和真实状态判断是否完成。"},
+    "recover":{"title":"失败与恢复","description":"先分清资料缺失、权限不足、执行失败与状态未知。保留有效任务状态，查明真实结果，再返回确认或调度节点；不能无限重试。"}
+  }
+}
