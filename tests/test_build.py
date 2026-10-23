@@ -36,9 +36,9 @@ class EditableBuildTests(unittest.TestCase):
             'chapter/k01/troubleshooting': '故障排查：核对状态回执。',
             'question/01.1/title': '编辑后的面试题怎么回答？',
             'question/01.1/answer': '先说判断，再解释原因。',
-            'guide': '更新后的学习指南。',
+            'round/0/description': '更新后的学习目标。',
             'round/0/title': '第一轮更新',
-            'glossary/0/example': '新的术语案例。',
+            'chapter/k08/intro': 'Embedding 把内容转成向量。比如把口语问题与制度条款联系起来。',
             'architecture/goal/input': '更新后的任务输入',
         }
         result, data = self.build(edits)
@@ -63,6 +63,10 @@ class EditableBuildTests(unittest.TestCase):
             self.assertEqual([q['id'] for q in item['questions']], [f"{item['number']}.{i}" for i in range(1, 4)])
             question_ids.extend(q['id'] for q in item['questions'])
         self.assertEqual(len(set(question_ids)), 108)
+        self.assertNotIn('glossary', data)
+        self.assertNotIn('guide', data)
+        self.assertFalse(any(field['key'].startswith('glossary/') for field in data['editorFields']))
+        self.assertEqual([extra['id'] for extra in data['extras']], ['extra0', 'extra1', 'extra2', 'extra4'])
         for value in edits.values():
             self.assertIn(value, data['source'])
 
@@ -75,7 +79,7 @@ class EditableBuildTests(unittest.TestCase):
         self.assertIn('<strong>重点</strong>', intro)
 
     def test_rejects_unknown_or_empty_fields(self):
-        for edits in [{'nonexistent': 'text'}, {'guide': ''}, {'chapter/k01/title': 'a\nb'}]:
+        for edits in [{'nonexistent': 'text'}, {'round/0/description': ''}, {'chapter/k01/title': 'a\nb'}]:
             result, _ = self.build(edits)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('ValueError', result.stderr)

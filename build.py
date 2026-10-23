@@ -83,33 +83,20 @@ for match in re.finditer(r'^### (\d{2})｜(.+?)〔(P[012])〕\n(.*?)(?=^### \d{2
         questions.append({'id': qid, 'title': question_title, 'answer': render(answer.strip())})
     group = next(i for i, bound in enumerate(BOUNDS) if int(number) <= bound)
     chapters.append({'id': 'k' + number, 'number': number, 'title': title, 'short': title.split('：')[0], 'priority': priority, 'group': group, **{key: render(value) for key, value in sections.items()}, 'questions': questions, 'search': title + '\n' + '\n'.join(sections.values()) + '\n' + '\n'.join(q['title'] + ' ' + BeautifulSoup(q['answer'], 'html.parser').get_text() for q in questions)})
-intro = source.split('## 先说这份手册怎么用', 1)[1].split('## 一、模型基础', 1)[0]
 appendix = source.split('## 七、', 1)[1]
-metadata = source.split('\n', 1)[1].split('## 先说这份手册怎么用', 1)[0]
-guide_markdown = editable('guide', '学习指南', intro.split('## 学习顺序与目录', 1)[0].strip(), 'home')
-guide_html = render(guide_markdown)
-extras = [{'id': 'guide', 'title': '阅读指南与学习顺序', 'html': render(metadata + '## 先说这份手册怎么用' + intro)}]
-for i, match in enumerate(re.finditer(r'^## (.+?)\n(.*?)(?=^## |\Z)', '## 七、' + appendix, re.M | re.S)):
-    extra_id = 'extra' + str(i)
+extras = []
+# Preserve published appendix links after removing the standalone glossary.
+appendix_ids = {'七': 'extra0', '八': 'extra1', '九': 'extra2', '十': 'extra4'}
+for match in re.finditer(r'^## (.+?)\n(.*?)(?=^## |\Z)', '## 七、' + appendix, re.M | re.S):
+    extra_id = appendix_ids[match.group(1).split('、', 1)[0]]
     extra_markdown = editable(f'extra/{extra_id}', '配套阅读正文', match.group(0), extra_id)
     extras.append({'id': extra_id, 'title': match.group(1).split('、', 1)[-1], 'html': render(extra_markdown), 'markdown': extra_markdown})
 if len(chapters) != 36 or any(len(c['questions']) != 3 for c in chapters):
     raise ValueError('Source must contain 36 chapters and three questions per chapter')
-glossary = []
-glossary_source = source.split('## 十、常用术语速查', 1)[1].split('## 十一、', 1)[0]
-for line in glossary_source.splitlines():
-    if line.startswith('|'):
-        cells = [cell.strip() for cell in line.strip('|').split('|')]
-        if len(cells) == 3 and re.search(r'\d{2}', cells[2]):
-            glossary.append({'term': cells[0], 'explanation': cells[1], 'chapters': re.findall(r'\d{2}', cells[2])})
 layout = json.loads((ROOT / 'content/layout.json').read_text(encoding='utf-8'))
 for page_id, page in layout['pages'].items():
     for key, label in [('title', '页面标题'), ('description', '页面介绍')]:
         page[key] = editable(f'page/{page_id}/{key}', label, page[key], page_id, key != 'title')
-for index, item in enumerate(glossary):
-    for key, label in [('term', '术语'), ('explanation', '口语解释')]:
-        item[key] = editable(f'glossary/{index}/{key}', label, item[key], f'glossary-{index}', key != 'term')
-    item['example'] = editable(f'glossary/{index}/example', '场景例子', layout['examples'][index], f'glossary-{index}')
 for index, item in enumerate(layout['rounds']):
     for key, label in [('title', '学习轮次标题'), ('description', '学习目标')]:
         item[key] = editable(f'round/{index}/{key}', f'第 {index + 1} 轮 · {label}', item[key], 'home', key != 'title')
@@ -149,7 +136,7 @@ unknown = set(EDITS) - {field['key'] for field in FIELDS}
 if unknown:
     raise ValueError(f'Unknown editable fields: {sorted(unknown)}')
 values = {field['key']: EDITS.get(field['key'], field['value']) for field in FIELDS}
-export = ['# AI 智能体学习手册', '## 学习指南', guide_markdown, '## 学习路径']
+export = ['# AI 知识点手册', '## 学习路径']
 for item in layout['rounds']:
     export.extend(['### ' + item['title'], item['description'], '知识点：' + '、'.join(f'{number:02d}' for number in item['ids'])])
 for group_index, group in enumerate(GROUPS):
@@ -160,9 +147,6 @@ for group_index, group in enumerate(GROUPS):
         export.extend(['**项目中的应用场景**', values[key + '/scenarios'], '**应用中经常遇到的问题**', values[key + '/troubleshooting']])
         for question in chapter['questions']:
             export.extend([f"**面试题 {question['id']}｜{question['title']}**", '**口述答案：**', values['question/' + question['id'] + '/answer']])
-export.append('## 常用术语与场景')
-for item in glossary:
-    export.extend(['### ' + item['term'], item['explanation'], item['example'], '回看：' + '、'.join(item['chapters'])])
 export.append('## 知识点任务架构图')
 for node in architecture['nodes']:
     export.extend(['### ' + node['title'], node['description'], '输入：' + node['input'], '产出：' + node['output'], '关联知识点：' + '、'.join(str(number) for number in node['chapters'])])
@@ -173,7 +157,7 @@ for extra in extras:
     if extra['id'] in {'extra1', 'extra2', 'extra4'}:
         export.append(extra['markdown'])
 source = '\n\n'.join(export) + '\n'
-payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'guide': guide_html, 'glossary': glossary, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao}, ensure_ascii=False).replace('<', '\\u003c')
+payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao}, ensure_ascii=False).replace('<', '\\u003c')
 template = (ROOT / 'template.html').read_text(encoding='utf-8')
 template = template.replace('__WORKSPACE_STYLE__', (ROOT / 'workspace.css').read_text(encoding='utf-8'))
 template = template.replace('__WORKSPACE_SCRIPT__', (ROOT / 'workspace.js').read_text(encoding='utf-8'))

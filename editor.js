@@ -30,7 +30,6 @@ const editorGroups = [
   ...DATA.doubao.questions.map(question => ({id: question.id, title: `豆包 · ${DATA.doubao.categories[question.category]} ${question.id.split('-').at(-1)} · ${question.title}`})),
   ...DATA.architecture.nodes.map(node => ({id: 'arch-' + node.id, title: '架构图 · ' + node.title})),
   ...Object.entries(DATA.architecture.traces).map(([id, trace]) => ({id: 'trace-' + id, title: '任务路径 · ' + trace.title})),
-  ...DATA.glossary.map((item, index) => ({id: 'glossary-' + index, title: '术语 · ' + item.term})),
   ...DATA.extras.filter(extra => ['extra1', 'extra2', 'extra4'].includes(extra.id)).map(extra => ({id: extra.id, title: extra.title}))
 ];
 editorGroup.innerHTML = editorGroups.map(group => `<option value="${group.id}">${escapeHTML(group.title)}</option>`).join('');
@@ -142,7 +141,6 @@ function groupForCurrentPage() {
   if (activeRoute.startsWith('challenge')) return challengeChapter().id;
   if (activeRoute === 'practice') return practiceQuestions()[state.practiceIndex].chapter.id;
   if (activeRoute === 'bank' || activeRoute === 'catalog') return DATA.chapters.some(chapter => chapter.id === bankScope) ? bankScope : state.last;
-  if (activeRoute === 'glossary') return 'glossary-0';
   if (activeRoute === 'architecture') return 'arch-' + DATA.architecture.nodes[0].id;
   return editorGroups.some(group => group.id === activeRoute) ? activeRoute : 'home';
 }
