@@ -6,6 +6,7 @@ editDialog.className = 'content-editor';
 editDialog.setAttribute('aria-labelledby', 'editor-title');
 editDialog.innerHTML = `
   <header class="editor-heading"><div><span class="eyebrow">EDIT CONTENT</span><h2 id="editor-title">编辑页面内容</h2></div><button type="button" class="btn small" id="editor-close" aria-label="关闭编辑">关闭</button></header>
+  <div class="editor-body">
   <p class="editor-help">直接修改文字，保存后自动发布到网站，通常需要几分钟。换行可分段，也支持 Markdown 排版。</p>
   <label class="editor-group-label">编辑位置<select id="editor-group" class="select"></select></label>
   <form id="editor-form"><div id="editor-fields"></div></form>
@@ -17,6 +18,7 @@ editDialog.innerHTML = `
   </details>
   <p id="editor-status" role="status" aria-live="polite"></p>
   <div id="editor-published" hidden><a href="https://github.com/${editorRepo}/actions" target="_blank" rel="noopener noreferrer">查看自动发布进度 ↗</a><span>发布成功后刷新网站查看。</span></div>
+  </div>
   <footer class="editor-footer"><div class="actions"><button type="button" class="text-button" id="editor-discard">撤销修改</button><button type="button" class="text-button" id="editor-export">下载修改备份</button><button type="button" class="text-button" id="editor-reload">载入最新内容</button></div><button type="submit" form="editor-form" class="btn primary" id="editor-save">保存并发布</button></footer>`;
 document.body.append(editDialog);
 const editorFields = editDialog.querySelector('#editor-fields');
