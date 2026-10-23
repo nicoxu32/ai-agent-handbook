@@ -43,6 +43,25 @@ class LocalContentTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def test_open_document_uses_registered_file_without_writing(self):
+        path = self.root / 'content/documents/k01.md'
+        before = path.read_bytes()
+        with patch('local_content.run') as launch, patch('local_content.sys.platform', 'darwin'):
+            result = local_content.open_document(self.root, 'k01')
+            self.assertTrue(result['opened'])
+            launch.assert_called_once_with(self.root, ['open', '-t', str(path.resolve())], timeout=10)
+            launch.reset_mock()
+            for invalid in ['../../.env', 'missing', None, ['k01']]:
+                with self.assertRaises(ValueError):
+                    local_content.open_document(self.root, invalid)
+            launch.assert_not_called()
+            self.assertEqual(before, path.read_bytes())
+            path.unlink()
+            path.symlink_to(self.root / 'README.md')
+            with self.assertRaises(ValueError):
+                local_content.open_document(self.root, 'k01')
+            launch.assert_not_called()
+
     def test_save_is_local_immediate_and_preserves_backups(self):
         before = git(self.root, 'rev-parse', 'HEAD')
         doc = local_content.document(self.root, 'k01')

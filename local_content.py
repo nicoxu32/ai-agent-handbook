@@ -1,5 +1,6 @@
 """Local Markdown persistence, validation and explicit batch publishing."""
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -64,6 +65,21 @@ def document(root, group):
         fields = manifest[group]['fields']
         return {'values': {f['key']: values[f['key']] for f in fields},
                 'revision': revisions[group], 'path': f'content/documents/{group}.md'}
+
+
+def open_document(root, group):
+    manifest = json.loads((root / 'content/documents.json').read_text())
+    if not isinstance(group, str) or not re.fullmatch(r'[a-zA-Z0-9_-]+', group) or group not in manifest:
+        raise ValueError('请选择有效的内容页面。')
+    directory = (root / 'content/documents').resolve()
+    path = directory / (group + '.md')
+    if path.is_symlink() or not path.is_file() or path.resolve().parent != directory:
+        raise ValueError('原文件不存在或路径无效。')
+    if sys.platform != 'darwin':
+        raise ValueError('当前系统暂不支持直接唤起编辑器，请手动打开：' + str(path))
+    # Force a text editor so Markdown opens for editing instead of preview.
+    run(root, ['open', '-t', str(path)], timeout=10)
+    return {'opened': True, 'path': f'content/documents/{group}.md'}
 
 
 def save(root, body):

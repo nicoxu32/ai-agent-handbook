@@ -1,6 +1,11 @@
 const editorRepo = 'nicoxu32/ai-agent-handbook';
 const editor = {base: {}, draft: {}, revision: '', group: '', busy: false, dirty: false, ready: false, token: ''};
 const localEditing = !STATIC_SITE && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+const publishButton = document.querySelector('#publish-content');
+const publishStatus = document.querySelector('#publish-status');
+let publishing = false;
+publishButton.hidden = !localEditing;
+document.querySelector('.topbar-edit').hidden = !localEditing;
 const editorDraftKey = 'nico-handbook-local-editor-drafts-v1';
 const editDialog = document.createElement('dialog');
 editDialog.className = 'content-editor';
@@ -13,10 +18,8 @@ editDialog.innerHTML = `
     <p id="editor-path" class="editor-help"></p>
     <form id="editor-form"><div id="editor-fields"></div></form>
     <p id="editor-status" role="status" aria-live="polite"></p>
-    <p id="local-publish-status" role="status"></p>
-    <div id="editor-published" hidden><a href="https://github.com/${editorRepo}/actions" target="_blank" rel="noopener noreferrer">查看网站发布进度 ↗</a></div>
   </div>
-  <footer class="editor-footer"><div class="actions"><button type="button" class="text-button" id="editor-export">下载草稿备份</button><button type="button" class="text-button" id="editor-reload">载入最新文件</button></div><div class="actions"><button type="button" class="btn" id="editor-publish">发布已保存内容</button><button type="submit" form="editor-form" class="btn primary" id="editor-save">保存到本地</button></div></footer>`;
+  <footer class="editor-footer"><div class="actions"><button type="button" class="text-button" id="editor-open-file">打开 Markdown 文件</button><button type="button" class="text-button" id="editor-export">下载草稿备份</button><button type="button" class="text-button" id="editor-reload">载入最新文件</button></div><div class="actions"><button type="submit" form="editor-form" class="btn primary" id="editor-save">保存到本地</button></div></footer>`;
 document.body.append(editDialog);
 const editorFields = editDialog.querySelector('#editor-fields');
 const editorGroup = editDialog.querySelector('#editor-group');
@@ -60,7 +63,7 @@ async function localRequest(path, body) {
 function showPublishStatus(status) {
   const pending = status.pending || 0;
   const unpushed = status.unpushed || 0;
-  editDialog.querySelector('#local-publish-status').textContent = pending || unpushed
+  publishButton.title = pending || unpushed
     ? `本地有 ${pending} 篇修改待发布${unpushed ? '，另有已提交但尚未同步的内容' : ''}。`
     : '本地内容已与最近同步的版本一致。';
 }
@@ -68,7 +71,9 @@ function updateEditorControls() {
   editDialog.querySelectorAll('input,textarea,select,button').forEach(control => { control.disabled = editor.busy; });
   editorFields.querySelectorAll('input,textarea').forEach(control => { control.disabled = editor.busy || !editor.ready; });
   editDialog.querySelector('#editor-save').disabled = editor.busy || !editor.ready || !editor.dirty;
-  editDialog.querySelector('#editor-publish').disabled = editor.busy || editor.dirty || !localEditing;
+  editDialog.querySelector('#editor-open-file').disabled = editor.busy || !localEditing || editor.dirty;
+  editDialog.querySelector('#editor-open-file').title = editor.dirty ? '请先保存或备份并载入最新文件，再打开原文件。' : '使用电脑的文本编辑器打开当前篇目';
+  publishButton.disabled = publishing || editor.busy;
   editDialog.querySelector('#editor-save').textContent = editor.busy ? '正在处理…' : '保存到本地';
 }
 function renderEditorFields() {
@@ -210,24 +215,45 @@ editDialog.querySelector('#editor-export').addEventListener('click', () => {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
-editDialog.querySelector('#editor-publish').addEventListener('click', async () => {
+editDialog.querySelector('#editor-open-file').addEventListener('click', async () => {
   if (editor.busy || editor.dirty) return;
   editor.busy = true;
   updateEditorControls();
-  editorMessage('正在核对远端版本并发布已保存的内容…');
+  try {
+    await localRequest('open-document', {group: editor.group});
+    editorMessage('已请求文本编辑器打开原文件。保存后点击「载入最新文件」，或关闭弹窗并刷新网页查看；请保留文件中的字段标记。');
+  } catch (error) { editorMessage(error.message, true); }
+  finally { editor.busy = false; updateEditorControls(); }
+});
+publishButton.addEventListener('click', async () => {
+  if (publishing || editor.busy) return;
+  publishing = true;
+  publishButton.textContent = '正在发布…';
+  publishStatus.hidden = false;
+  publishStatus.textContent = '正在同步已保存的文档，未保存草稿不参与发布。';
+  updateEditorControls();
   try {
     const result = await localRequest('publish', {});
     showPublishStatus(result);
-    editorMessage('已同步到 GitHub。线上网站自动发布后刷新可见，本地阅读无需等待。');
-    editDialog.querySelector('#editor-published').hidden = false;
-  } catch (error) { editorMessage(error.message, true); }
-  finally { editor.busy = false; updateEditorControls(); }
+    publishStatus.replaceChildren(document.createTextNode('已同步，等待网站部署。'));
+    const link = document.createElement('a');
+    link.href = `https://github.com/${editorRepo}/actions`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = '查看发布进度 ↗';
+    publishStatus.append(link);
+  } catch (error) { publishStatus.textContent = error.message; }
+  finally {
+    publishing = false;
+    publishButton.textContent = '发布到 GitHub';
+    updateEditorControls();
+  }
 });
 document.addEventListener('click', event => {
   if (event.target.closest('[data-action="edit-page"]')) openEditor();
 });
 window.addEventListener('beforeunload', event => {
-  if (editor.busy) { event.preventDefault(); event.returnValue = ''; }
+  if (editor.busy || publishing) { event.preventDefault(); event.returnValue = ''; }
 });
 window.addEventListener('load', () => {
   const position = sessionStorage.getItem('nico-local-save-scroll');

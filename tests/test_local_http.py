@@ -24,11 +24,12 @@ class LocalHTTPTests(unittest.TestCase):
                 {'X-Handbook-Token': server.SESSION_TOKEN, 'Sec-Fetch-Site': 'cross-site'},
             ]:
                 with self.subTest(headers=list(headers)):
-                    request = Request(address+'/api/local/save', data=b'{}', headers={'Content-Type':'application/json', **headers})
-                    with self.assertRaises(HTTPError) as caught:
-                        urlopen(request)
-                    self.assertEqual(caught.exception.code, 403)
-                    caught.exception.close()
+                    for endpoint in ['save', 'open-document', 'publish']:
+                        request = Request(address+'/api/local/'+endpoint, data=b'{}', headers={'Content-Type':'application/json', **headers})
+                        with self.assertRaises(HTTPError) as caught:
+                            urlopen(request)
+                        self.assertEqual(caught.exception.code, 403)
+                        caught.exception.close()
             for path in ['/.env', '/content/documents/k01.md', '/../.env']:
                 with self.assertRaises(HTTPError) as caught:
                     urlopen(address+path)
@@ -38,6 +39,10 @@ class LocalHTTPTests(unittest.TestCase):
                 request = Request(address+'/api/local/document', data=json.dumps({'group':'k01'}).encode(), headers={'Content-Type':'application/json','X-Handbook-Token':server.SESSION_TOKEN,'Origin':address})
                 self.assertEqual(json.load(urlopen(request))['revision'], 'test')
                 read.assert_called_once_with(server.ROOT, 'k01')
+            with patch('server.local_content.open_document', return_value={'opened':True}) as opened:
+                request = Request(address+'/api/local/open-document', data=json.dumps({'group':'k02'}).encode(), headers={'Content-Type':'application/json','X-Handbook-Token':server.SESSION_TOKEN,'Origin':address})
+                self.assertTrue(json.load(urlopen(request))['opened'])
+                opened.assert_called_once_with(server.ROOT, 'k02')
         finally:
             http.shutdown()
             http.server_close()

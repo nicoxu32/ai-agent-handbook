@@ -46,13 +46,24 @@ def run():
                 # Block all external network requests: local editing must still work.
                 page.route('https://**', lambda route: route.abort())
                 page.goto(url+'/#k01')
+                expect(page.locator('.topbar #publish-content')).to_be_visible()
+                assert page.locator('.content-editor #editor-publish').count() == 0
+                opened = []
+                def open_file(route):
+                    opened.append(route.request.post_data_json)
+                    route.fulfill(json={'opened':True, 'path':'content/documents/k01.md'})
+                page.route('**/api/local/open-document', open_file)
                 key = 'chapter/k01/intro'
                 original_head = git(root, 'rev-parse', 'HEAD')
                 page.locator('[data-action="edit-page"]').click()
                 expect(page.locator('#editor-status')).to_contain_text('已读取')
+                page.locator('#editor-open-file').click()
+                expect(page.locator('#editor-status')).to_contain_text('已请求文本编辑器')
+                assert opened == [{'group':'k01'}]
                 source = page.locator(f'[data-field-key="{key}"]').input_value()
                 new_text = source+'\n\n离线保存测试。\n换行即时可见。'
                 page.locator(f'[data-field-key="{key}"]').fill(new_text)
+                expect(page.locator('#editor-open-file')).to_be_disabled()
                 page.locator('#editor-close').click()
                 page.reload()
                 page.locator('[data-action="edit-page"]').click()
@@ -93,6 +104,7 @@ def run():
 
                 for width in [1366,390,320]:
                     page.set_viewport_size({'width':width,'height':900})
+                    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                     page.locator('[data-action="edit-page"]').click()
                     expect(page.locator('#editor-status')).to_contain_text('已恢复')
                     header = page.locator('.content-editor:not(.append-editor) .editor-heading').bounding_box()
@@ -103,9 +115,19 @@ def run():
                     assert footer['x']>=0 and footer['x']+footer['width']<=width
                     page.screenshot(path=f'/tmp/local-editor-{width}.png')
                     page.locator('#editor-close').click()
+                published = []
+                def publish(route):
+                    published.append(route.request.post_data_json)
+                    route.fulfill(json={'published':True, 'pending':0, 'unpushed':0})
+                page.route('**/api/local/publish', publish)
+                page.locator('#publish-content').click()
+                expect(page.locator('#publish-status')).to_contain_text('已同步，等待网站部署')
+                assert published == [{}]
+                assert page.locator('#publish-status a').get_attribute('href').endswith('/actions')
+                print('PASS: footer opens selected Markdown; dirty draft blocks external opening; publishing is global.')
                 assert not errors, errors
                 browser.close()
-                print('PASS: desktop and mobile editor fits viewport; heading and save/publish controls fixed.')
+                print('PASS: desktop and mobile editor fits viewport; heading and local save controls fixed.')
         finally:
             process.terminate()
             process.wait(timeout=5)

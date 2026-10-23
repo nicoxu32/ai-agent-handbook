@@ -231,6 +231,8 @@ class HandbookHandler(BaseHTTPRequestHandler):
             path = urlsplit(self.path).path
             if path == '/api/local/document':
                 result = local_content.document(ROOT, body.get('group'))
+            elif path == '/api/local/open-document':
+                result = local_content.open_document(ROOT, body.get('group'))
             elif path == '/api/local/save':
                 result = local_content.save(ROOT, body)
             elif path == '/api/local/publish':
