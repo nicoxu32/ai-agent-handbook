@@ -134,6 +134,10 @@ async function loadEditorContent() {
     updateEditorControls();
   }
 }
+function contentEditButton() {
+  return '<button type="button" class="btn small content-edit" data-action="edit-page">编辑内容</button>';
+}
+
 function groupForCurrentPage() {
   if (DATA.doubao.questions.some(question => question.id === activeRoute)) return activeRoute;
   if (activeRoute === 'doubao') return main.querySelector('.doubao-question[open]')?.dataset.questionId || filteredDoubaoQuestions()[0]?.id || DATA.doubao.questions[0].id;

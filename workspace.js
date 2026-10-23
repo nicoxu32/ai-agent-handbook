@@ -61,7 +61,7 @@ function pageHeader(section, title, description) {
     title = escapeHTML(copy.title);
     description = escapeHTML(copy.description);
   }
-  return `<header class="workspace-page-head"><h1 class="page-title">${title}</h1><p class="hero-copy">${description}</p></header>`;
+  return `<header class="workspace-page-head"><div class="content-heading"><h1 class="page-title">${title}</h1>${searchInput.value.trim() ? '' : contentEditButton()}</div><p class="hero-copy">${description}</p></header>`;
 }
 function home() {
   const last = DATA.chapters.find(chapter => chapter.id === state.last);
