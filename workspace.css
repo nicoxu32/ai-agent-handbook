@@ -97,3 +97,27 @@
 @media(max-width:1200px){.architecture-map{grid-template-columns:minmax(0,1fr)}.arch-rail{border-left:0;padding-left:0;border-top:1px dashed #b7c7a8;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.arch-rail .arch-layer-label,.arch-rail-note,.arch-rail>.arch-loop{grid-column:1/-1}.arch-rail .arch-node{margin-bottom:0}.overview-links a{padding:18px}.overview-links strong{font-size:14px}}
 @media(max-width:760px){.project-picker{padding-bottom:15px}.project-picker select{font-size:14px}.overview-links,.glossary-grid,.interview-options{grid-template-columns:1fr}.overview-links{gap:10px}.overview-links a{padding:17px;gap:7px}.workspace-page-head .hero-copy{font-size:13px}.overview-actions .btn{max-width:100%;text-align:left}.bank-controls{grid-template-columns:1fr;gap:12px}.bank-controls input,.bank-controls select{font-size:14px}.catalog-module>header{padding:19px}.catalog-row{padding:17px 16px}.catalog-row>a{gap:10px}.catalog-row .badge{font-size:9px;padding:3px 5px}.catalog-row h3{font-size:14px}.catalog-row-actions{margin-left:28px;gap:14px}.bank-question{padding:20px 17px}.bank-question h2{font-size:16px}.path-head h3{font-size:22px}.glossary-card{padding:22px}.architecture-map{gap:15px}.arch-branches{grid-template-columns:1fr;padding:10px}.arch-node{padding:17px;scroll-margin-top:145px}.arch-rail{grid-template-columns:1fr;gap:13px}.trace-controls .btn{flex:1 0 40%;font-size:12px}.trace-description{min-height:0}.pending-sections{grid-template-columns:1fr;gap:9px}.pending-sections span{padding:18px}.guide-copy p,.guide-copy li{font-size:14px}.interview-options article{padding:25px}.guide-section .badge{white-space:normal}}
 @media print{.project-picker,.trace-controls{display:none}.architecture-map{display:block}.arch-node{break-inside:avoid}.arch-rail{display:block}.knowledge-chip{font-size:9pt}.overview-links{display:block}.nav-section{display:none}}
+.page-path{display:flex;flex:1;min-width:0;align-items:center;flex-wrap:wrap;gap:5px 9px;font-size:12px;line-height:1.7}
+.page-path button{padding:0;color:var(--muted);font-size:inherit}
+.page-path button:hover{color:var(--green);text-decoration:underline;text-underline-offset:4px}
+.page-path>span{color:#a4ad9e}
+.page-path strong{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.footer-actions{display:flex;gap:20px;flex-wrap:wrap}
+.content-editor{width:min(840px,calc(100vw - 32px));max-height:90dvh;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:28px;box-shadow:0 20px 90px #18281e35}
+.content-editor::backdrop{background:#17281e70;backdrop-filter:blur(3px)}
+.editor-heading{display:flex;justify-content:space-between;gap:20px;align-items:center}
+.editor-heading h2{font:28px/1.4 var(--serif);margin:10px 0}
+.editor-help{font-size:13px;color:var(--muted);margin:4px 0 20px}
+.content-editor label{display:grid;gap:8px;font-size:13px;color:var(--green);margin:18px 0}
+.content-editor input,.content-editor textarea{width:100%;border:1px solid var(--line);border-radius:4px;padding:12px;background:var(--white);color:var(--ink);font:14px/1.9 var(--sans)}
+.content-editor textarea{resize:vertical;min-height:120px}
+.content-editor .select{width:100%;font-size:14px}
+#editor-auth{padding:16px;background:#e9eee3;border-radius:5px;margin-top:26px;font-size:12px}
+#editor-auth summary{cursor:pointer;color:var(--green)}
+#editor-auth p{margin:14px 0 10px}
+#editor-status{font-size:13px;color:var(--green);margin:20px 0;white-space:pre-wrap}
+#editor-status.error{color:#9c422c}
+#editor-published{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;margin-bottom:18px}
+.editor-footer{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-top:16px;border-top:1px solid var(--line)}
+@media(max-width:760px){.page-path{font-size:11px;gap:3px 7px}.page-path strong{font-size:12px}.content-editor{padding:20px;width:calc(100vw - 20px);max-height:94dvh}.content-editor input,.content-editor textarea,.content-editor .select{font-size:16px}.editor-heading h2{font-size:24px}.editor-footer{align-items:stretch;flex-direction:column}.editor-footer>.actions{justify-content:space-between}.footer-actions{gap:16px}.topbar .search{width:100%}}
+@media print{.content-editor,.page-path{display:none!important}}
