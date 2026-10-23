@@ -127,7 +127,7 @@
 .doubao-toggle{position:absolute;right:23px;top:37px;font:calc(24px * var(--reading-scale, 1)) var(--serif);color:var(--green)}
 .doubao-question[open]>summary .doubao-toggle{font-size:0}
 .doubao-question[open]>summary .doubao-toggle:after{content:'−';font-size:calc(24px * var(--reading-scale, 1))}
-.doubao-answer{border-top:1px solid var(--line);padding:25px;max-width:950px}
+.doubao-answer{border-top:1px solid var(--line);padding:25px}
 .doubao-answer section+section{margin-top:28px}
 .doubao-answer section>h3{font-size:calc(13px * var(--reading-scale, 1));color:var(--green);letter-spacing:1px;margin-bottom:16px}
 .doubao-answer .prose{font-size:calc(14px * var(--reading-scale, 1));line-height:2}
