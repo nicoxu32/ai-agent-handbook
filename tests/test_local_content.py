@@ -1,0 +1,137 @@
+"""Verify local disk persistence and publishing against a temporary Git remote."""
+import json
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+import unittest
+from unittest.mock import patch
+from bs4 import BeautifulSoup
+import local_content
+from content_store import load_documents, document_text
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def copy_project(target):
+    for pattern in ['*.py', '*.js', '*.css', 'template.html', 'architecture.json', '.gitignore']:
+        for path in ROOT.glob(pattern):
+            shutil.copyfile(path, target / path.name)
+    shutil.copytree(ROOT / 'content', target / 'content')
+
+
+def git(root, *args):
+    return local_content.run(root, ['git', *args])
+
+
+class LocalContentTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name) / 'repo'
+        self.root.mkdir()
+        copy_project(self.root)
+        git(self.root, 'init', '-b', 'main')
+        git(self.root, 'config', 'user.email', 'test@example.invalid')
+        git(self.root, 'config', 'user.name', 'Test')
+        git(self.root, 'add', '.')
+        git(self.root, 'commit', '-m', 'Initial fixture')
+        self.remote = Path(self.temp.name) / 'remote.git'
+        git(self.root, 'init', '--bare', str(self.remote))
+        git(self.root, 'remote', 'add', 'origin', str(self.remote))
+        git(self.root, 'push', '-u', 'origin', 'main')
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def test_save_is_local_immediate_and_preserves_backups(self):
+        before = git(self.root, 'rev-parse', 'HEAD')
+        doc = local_content.document(self.root, 'k01')
+        old = (self.root / doc['path']).read_bytes()
+        doc['values']['chapter/k01/intro'] = '**本地新增**\n下一行 😀。\n\n第二段。'
+        result = local_content.save(self.root, {'group': 'k01', **doc})
+        self.assertEqual(result['pending'], 1)
+        self.assertEqual(before, git(self.root, 'rev-parse', 'HEAD'))
+        self.assertEqual(before, git(self.root, 'rev-parse', 'origin/main'))
+        self.assertEqual(next((self.root / '.local/backups').glob('k01-*.md')).read_bytes(), old)
+        html = local_content.current_html(self.root).decode()
+        data = json.loads(BeautifulSoup(html, 'html.parser').select_one('#handbook-data').string)
+        self.assertIn('本地新增', data['chapters'][0]['intro'])
+        self.assertIn('<br/>', data['chapters'][0]['intro'])
+        self.assertIn('本地新增', data['chapters'][0]['search'])
+        self.assertIn('本地新增', data['source'])
+        self.assertEqual(len(data['chapters']), 36)
+        self.assertEqual(sum(len(c['questions']) for c in data['chapters']), 108)
+        with self.assertRaisesRegex(ValueError, '其他窗口'):
+            local_content.save(self.root, {'group': 'k01', **doc})
+
+    def test_validation_failure_does_not_replace_file(self):
+        doc = local_content.document(self.root, 'k01')
+        before = (self.root / doc['path']).read_bytes()
+        doc['values']['chapter/k01/intro'] = '测试草稿。'
+        with patch('local_content.build', side_effect=ValueError('Invalid build')):
+            with self.assertRaises(ValueError):
+                local_content.save(self.root, {'group': 'k01', **doc})
+        self.assertEqual((self.root / doc['path']).read_bytes(), before)
+        for value in ['', '<!-- /field -->']:
+            doc['values']['chapter/k01/intro'] = value
+            with self.assertRaises(ValueError):
+                local_content.save(self.root, {'group': 'k01', **doc})
+            self.assertEqual((self.root / doc['path']).read_bytes(), before)
+
+    def test_publish_batches_files_and_refuses_unrelated_changes(self):
+        for group in ['k01', 'k02']:
+            doc = local_content.document(self.root, group)
+            doc['values'][f'chapter/{group}/intro'] += '\n\n本地更新。'
+            local_content.save(self.root, {'group': group, **doc})
+        before = git(self.root, 'rev-parse', 'HEAD')
+        (self.root / 'unrelated.txt').write_text('Keep this file')
+        with self.assertRaisesRegex(ValueError, '程序或结构修改'):
+            local_content.publish(self.root)
+        (self.root / 'unrelated.txt').unlink()
+        result = local_content.publish(self.root)
+        self.assertTrue(result['published'])
+        self.assertEqual(result['pending'], 0)
+        self.assertEqual(result['unpushed'], 0)
+        self.assertEqual(git(self.root, 'rev-list', '--count', before+'..HEAD'), '1')
+        self.assertEqual(set(git(self.root, 'diff', '--name-only', before, 'HEAD').splitlines()), {'content/documents/k01.md', 'content/documents/k02.md'})
+        self.assertEqual(local_content.publish(self.root)['commit'], result['commit'])
+
+    def test_remote_conflict_preserves_local_document(self):
+        other = Path(self.temp.name) / 'other'
+        git(self.root, 'clone', '--branch', 'main', str(self.remote), str(other))
+        git(other, 'config', 'user.email', 'test@example.invalid')
+        git(other, 'config', 'user.name', 'Test')
+        path = 'content/documents/k01.md'
+        (other / path).write_text((other / path).read_text().replace('先理解它在做什么', '远端已经改写'))
+        git(other, 'add', path)
+        git(other, 'commit', '-m', 'Remote change')
+        git(other, 'push')
+        doc = local_content.document(self.root, 'k01')
+        doc['values']['chapter/k01/intro'] += '\n\n本地尚未发布。'
+        local_content.save(self.root, {'group': 'k01', **doc})
+        before = (self.root / path).read_bytes()
+        with self.assertRaisesRegex(ValueError, '远端更新涉及'):
+            local_content.publish(self.root)
+        self.assertEqual((self.root / path).read_bytes(), before)
+
+    def test_failed_push_can_retry_without_duplicate_commit(self):
+        doc = local_content.document(self.root, 'k01')
+        doc['values']['chapter/k01/intro'] += '\n\n等待网络恢复。'
+        local_content.save(self.root, {'group': 'k01', **doc})
+        original_run = local_content.run
+
+        def disconnected(root, args, **kwargs):
+            if args[:2] == ['git', 'push']:
+                raise ValueError('Network unavailable')
+            return original_run(root, args, **kwargs)
+
+        with patch('local_content.run', side_effect=disconnected):
+            with self.assertRaisesRegex(ValueError, '修改和本地提交均已保留'):
+                local_content.publish(self.root)
+        committed = git(self.root, 'rev-parse', 'HEAD')
+        self.assertEqual(local_content.status(self.root)['unpushed'], 1)
+        self.assertEqual(local_content.publish(self.root)['commit'], committed)
+
+
+if __name__ == '__main__':
+    unittest.main()

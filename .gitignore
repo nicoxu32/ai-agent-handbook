@@ -5,3 +5,6 @@ __pycache__/
 .venv/
 .DS_Store
 _site/
+
+.local/
+index.html

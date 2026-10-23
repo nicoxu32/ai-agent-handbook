@@ -1,282 +1,239 @@
 const editorRepo = 'nicoxu32/ai-agent-handbook';
-const editorFile = `/repos/${editorRepo}/contents/content/edits.json`;
-const editor = {token: '', base: structuredClone(DATA.edits), draft: structuredClone(DATA.edits), sha: '', group: '', busy: false, dirty: false, ready: false};
+const editor = {base: {}, draft: {}, revision: '', group: '', busy: false, dirty: false, ready: false, token: ''};
+const localEditing = !STATIC_SITE && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+const editorDraftKey = 'nico-handbook-local-editor-drafts-v1';
 const editDialog = document.createElement('dialog');
 editDialog.className = 'content-editor';
 editDialog.setAttribute('aria-labelledby', 'editor-title');
 editDialog.innerHTML = `
-  <header class="editor-heading"><div><span class="eyebrow">正文编辑</span><h2 id="editor-title">编辑页面内容</h2></div><button type="button" class="btn small" id="editor-close" aria-label="关闭编辑">关闭</button></header>
+  <header class="editor-heading"><div><span class="eyebrow">正文编辑</span><h2 id="editor-title">编辑页面内容</h2></div><button type="button" class="btn small" id="editor-close">关闭</button></header>
   <div class="editor-body">
-  <p class="editor-help">直接修改文字，回车换行，空行分段，也支持 Markdown 排版。保存后自动发布，通常需要几分钟；发布完成后刷新网页查看。</p>
-  <label class="editor-group-label">编辑位置<select id="editor-group" class="select"></select></label>
-  <form id="editor-form"><div id="editor-fields"></div></form>
-  <details id="editor-auth"><summary>GitHub 编辑授权 <span id="editor-auth-state">· 尚未连接</span></summary>
-    <p>仅有此仓库写入权限的人可以发布。创建细粒度令牌，选择 <b>ai-agent-handbook</b> 仓库，并将 <b>Contents</b> 设为 <b>Read and write</b>，其余保持默认。令牌只在当前页面内存中使用，刷新或断开后需重新填写。</p>
-    <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">前往 GitHub 创建授权令牌 ↗</a>
-    <label><span>GitHub 授权令牌</span><input id="editor-token" type="password" autocomplete="off" spellcheck="false" placeholder="仅在此处填写，不要写入正文"></label>
-    <div class="actions"><button type="button" class="btn small" id="editor-connect">连接 GitHub</button><button type="button" class="text-button" id="editor-disconnect" hidden>断开连接</button></div>
-  </details>
-  <p id="editor-status" role="status" aria-live="polite"></p>
-  <div id="editor-published" hidden><a href="https://github.com/${editorRepo}/actions" target="_blank" rel="noopener noreferrer">查看自动发布进度 ↗</a><span>发布成功后刷新网站查看。</span></div>
+    <p class="editor-help">回车换行，空行分段。保存到电脑里的 Markdown 文件后，阅读页面立即更新；积累修改后再统一发布。</p>
+    <label><span>编辑位置</span><select id="editor-group" class="select"></select></label>
+    <p id="editor-path" class="editor-help"></p>
+    <form id="editor-form"><div id="editor-fields"></div></form>
+    <p id="editor-status" role="status" aria-live="polite"></p>
+    <p id="local-publish-status" role="status"></p>
+    <div id="editor-published" hidden><a href="https://github.com/${editorRepo}/actions" target="_blank" rel="noopener noreferrer">查看网站发布进度 ↗</a></div>
   </div>
-  <footer class="editor-footer"><div class="actions"><button type="button" class="text-button" id="editor-discard">撤销修改</button><button type="button" class="text-button" id="editor-export">下载修改备份</button><button type="button" class="text-button" id="editor-reload">载入最新内容</button></div><button type="submit" form="editor-form" class="btn primary" id="editor-save">保存并发布</button></footer>`;
+  <footer class="editor-footer"><div class="actions"><button type="button" class="text-button" id="editor-export">下载草稿备份</button><button type="button" class="text-button" id="editor-reload">载入最新文件</button></div><div class="actions"><button type="button" class="btn" id="editor-publish">发布已保存内容</button><button type="submit" form="editor-form" class="btn primary" id="editor-save">保存到本地</button></div></footer>`;
 document.body.append(editDialog);
 const editorFields = editDialog.querySelector('#editor-fields');
 const editorGroup = editDialog.querySelector('#editor-group');
-const editorStatus = editDialog.querySelector('#editor-status');
-const editorToken = editDialog.querySelector('#editor-token');
-const editorGroups = [
-  {id: 'home', title: '学习总览 · 指南与路径'},
-  ...Object.keys(DATA.pages).filter(id => id !== 'home').map(id => ({id, title: '页面介绍 · ' + DATA.pages[id].title})),
-  ...DATA.chapters.map(chapter => ({id: chapter.id, title: `${chapter.number} · ${chapter.short}（含三道面试题）`})),
-  ...DATA.doubao.questions.map(question => ({id: question.id, title: `豆包 · ${DATA.doubao.categories[question.category]} ${question.id.split('-').at(-1)} · ${question.title}`})),
-  ...DATA.architecture.nodes.map(node => ({id: 'arch-' + node.id, title: '架构图 · ' + node.title})),
-  ...Object.entries(DATA.architecture.traces).map(([id, trace]) => ({id: 'trace-' + id, title: '任务路径 · ' + trace.title})),
-  ...DATA.extras.filter(extra => ['extra1', 'extra2', 'extra4'].includes(extra.id)).map(extra => ({id: extra.id, title: extra.title}))
-];
-editorGroup.innerHTML = editorGroups.map(group => `<option value="${group.id}">${escapeHTML(group.title)}</option>`).join('');
+const editorGroups = [...new Set(DATA.editorFields.map(field => field.group))].map(id => {
+  const chapter = DATA.chapters.find(item => item.id === id);
+  const question = DATA.doubao.questions.find(item => item.id === id);
+  const node = DATA.architecture.nodes.find(item => 'arch-' + item.id === id);
+  const extra = DATA.extras.find(item => item.id === id);
+  const trace = DATA.architecture.traces[id.replace(/^trace-/, '')];
+  const title = chapter?.title || question?.title || node?.title || extra?.title || trace?.title || DATA.pages[id]?.title || id;
+  return {id, title};
+});
+editorGroup.innerHTML = editorGroups.map(item => `<option value="${item.id}">${escapeHTML(item.title)}</option>`).join('');
 
 function editableValue(field, overrides = editor.draft) {
   return Object.hasOwn(overrides, field.key) ? overrides[field.key] : field.value;
 }
+function sameEdits(left, right) {
+  const keys = Object.keys(left);
+  return keys.length === Object.keys(right).length && keys.every(key => left[key] === right[key]);
+}
 function editorMessage(message, error = false) {
-  editorStatus.textContent = message;
-  editorStatus.classList.toggle('error', error);
+  const status = editDialog.querySelector('#editor-status');
+  status.textContent = message;
+  status.classList.toggle('error', error);
+}
+async function localRequest(path, body) {
+  if (!localEditing) throw new Error('请在电脑上打开本地学习手册，再编辑 Markdown 文件。线上网站用于查看已发布内容。');
+  if (!editor.token) {
+    const response = await fetch('/api/local/status', {cache: 'no-store'});
+    const status = await response.json();
+    if (!response.ok) throw new Error(status.error || '本地服务未就绪。');
+    editor.token = status.token;
+    showPublishStatus(status);
+  }
+  const response = await fetch('/api/local/' + path, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Handbook-Token': editor.token}, body: JSON.stringify(body), signal: AbortSignal.timeout(path === 'publish' ? 180000 : 30000)});
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || '本地操作失败，请保留草稿后重试。');
+  return result;
+}
+function showPublishStatus(status) {
+  const pending = status.pending || 0;
+  const unpushed = status.unpushed || 0;
+  editDialog.querySelector('#local-publish-status').textContent = pending || unpushed
+    ? `本地有 ${pending} 篇修改待发布${unpushed ? '，另有已提交但尚未同步的内容' : ''}。`
+    : '本地内容已与最近同步的版本一致。';
 }
 function updateEditorControls() {
   editDialog.querySelectorAll('input,textarea,select,button').forEach(control => { control.disabled = editor.busy; });
   editorFields.querySelectorAll('input,textarea').forEach(control => { control.disabled = editor.busy || !editor.ready; });
   editDialog.querySelector('#editor-save').disabled = editor.busy || !editor.ready || !editor.dirty;
-  editDialog.querySelector('#editor-save').textContent = editor.busy ? '正在处理…' : '保存并发布';
-  editDialog.querySelector('#editor-auth-state').textContent = editor.token ? '· 已连接' : '· 尚未连接';
-  editDialog.querySelector('#editor-disconnect').hidden = !editor.token;
+  editDialog.querySelector('#editor-publish').disabled = editor.busy || editor.dirty || !localEditing;
+  editDialog.querySelector('#editor-save').textContent = editor.busy ? '正在处理…' : '保存到本地';
 }
 function renderEditorFields() {
   editorGroup.value = editor.group;
   editorFields.replaceChildren();
-  DATA.editorFields.filter(field => field.group === editor.group).forEach(field => {
+  for (const field of DATA.editorFields.filter(item => item.group === editor.group)) {
     const label = document.createElement('label');
     const caption = document.createElement('span');
     caption.textContent = field.label;
-    label.append(caption);
     const input = document.createElement(field.multiline ? 'textarea' : 'input');
     input.dataset.fieldKey = field.key;
     input.value = editableValue(field);
     input.required = true;
     input.maxLength = field.multiline ? 40000 : 300;
     if (field.multiline) input.rows = Math.min(18, Math.max(4, Math.ceil(input.value.length / 65)));
-    label.append(input);
+    label.append(caption, input);
     updateTermNotes(input);
     editorFields.append(label);
-  });
+  }
   updateEditorControls();
 }
-function validateOverrides(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('内容文件格式不正确，未覆盖现有内容。');
-  const known = new Map(DATA.editorFields.map(field => [field.key, field]));
-  for (const [key, text] of Object.entries(value)) {
-    const field = known.get(key);
-    if (!field) throw new Error('网站结构已有更新，请先下载修改备份，再刷新网站。');
-    if (typeof text !== 'string' || !text.trim() || text.length > (field.multiline ? 40000 : 300) || (!field.multiline && text.includes('\n'))) {
-      throw new Error(`「${field.label}」为空或过长，请检查后重试。`);
-    }
-  }
-}
-async function githubRequest(path, {method = 'GET', body, token = editor.token} = {}) {
-  const headers = {Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'};
-  if (token) headers.Authorization = 'Bearer ' + token;
-  if (body) headers['Content-Type'] = 'application/json';
-  let response;
+function readEditorDrafts() {
   try {
-    response = await fetch('https://api.github.com' + path, {method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', credentials: 'omit', redirect: 'error', signal: AbortSignal.timeout(25000)});
-  } catch {
-    throw new Error('无法连接 GitHub，可能是网络或请求超时。修改仍保留在当前页面，可先下载备份。');
+    const drafts = JSON.parse(localStorage.getItem(editorDraftKey) || '{}');
+    return drafts && typeof drafts === 'object' && !Array.isArray(drafts) ? drafts : {};
   }
-  if (!response.ok) {
-    const messages = {401: '授权已失效，请重新连接 GitHub。', 403: 'GitHub 拒绝请求：请检查令牌的仓库权限或稍后重试。', 404: '无法访问内容文件，请检查授权是否选择了 ai-agent-handbook 仓库。', 409: '内容已被其他设备修改，请下载备份后载入最新内容。', 422: 'GitHub 未接受此次保存，请检查权限并载入最新内容。', 429: 'GitHub 请求频繁，请稍后重试。'};
-    throw new Error(messages[response.status] || 'GitHub 暂时不可用，修改尚未确认保存。');
-  }
-  return response.json();
+  catch { return {}; }
 }
-function encodeContent(value) {
-  const bytes = new TextEncoder().encode(JSON.stringify(value, null, 2) + '\n');
-  if (bytes.length > 900000) throw new Error('内容超过单次保存上限，请下载备份后联系维护者。');
-  let binary = '';
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-async function readEditorFile() {
-  const file = await githubRequest(editorFile + '?ref=main');
-  if (file.encoding !== 'base64' || !file.sha) throw new Error('无法读取内容文件，请稍后重试。');
-  let value;
+function persistEditorDraft() {
   try {
-    value = JSON.parse(new TextDecoder('utf-8', {fatal: true}).decode(Uint8Array.from(atob(file.content.replace(/\s/g, '')), char => char.charCodeAt(0))));
-  } catch {
-    throw new Error('内容文件无法解析，未覆盖当前修改。');
-  }
-  validateOverrides(value);
-  return {value, sha: file.sha};
+    const drafts = readEditorDrafts();
+    if (editor.dirty) drafts[editor.group] = {values: editor.draft, revision: editor.revision};
+    else delete drafts[editor.group];
+    localStorage.setItem(editorDraftKey, JSON.stringify(drafts));
+  } catch { editorMessage('浏览器无法暂存草稿，请保存到本地文件或下载备份。', true); }
 }
 async function loadEditorContent() {
-  if (editor.busy) return;
   editor.busy = true;
+  editor.ready = false;
   updateEditorControls();
-  editorMessage('正在读取 GitHub 上的最新内容…');
   try {
-    const file = await readEditorFile();
-    editor.base = file.value;
-    editor.draft = structuredClone(file.value);
-    editor.sha = file.sha;
+    const result = await localRequest('document', {group: editor.group});
+    editor.base = result.values;
+    editor.draft = structuredClone(result.values);
+    editor.revision = result.revision;
     editor.ready = true;
-    editor.dirty = false;
-    editDialog.querySelector('#editor-published').hidden = true;
+    const draft = readEditorDrafts()[editor.group];
+    if (draft?.values && draft.revision) {
+      // Keep the original revision so an old draft cannot overwrite a newer file.
+      editor.draft = draft.values;
+      editor.revision = draft.revision;
+    }
+    editor.dirty = !sameEdits(editor.draft, editor.base);
+    editDialog.querySelector('#editor-path').textContent = '本地文件：' + result.path;
+    editorMessage(editor.dirty ? '已恢复未保存草稿。保存到本地后阅读页面立即更新。' : '已读取电脑里的最新文件。');
     renderEditorFields();
-    editorMessage('已载入最新内容。修改后点击「保存并发布」。');
-  } catch (error) {
-    editorMessage(error.message, true);
-  } finally {
-    editor.busy = false;
-    updateEditorControls();
-  }
+  } catch (error) { editorMessage(error.message, true); }
+  finally { editor.busy = false; updateEditorControls(); }
 }
 function groupForCurrentPage() {
-  if (DATA.doubao.questions.some(question => question.id === activeRoute)) return activeRoute;
-  if (activeRoute === 'doubao') return main.querySelector('.doubao-question[open]')?.dataset.questionId || filteredDoubaoQuestions()[0]?.id || DATA.doubao.questions[0].id;
-  if (DATA.chapters.some(chapter => chapter.id === activeRoute)) return activeRoute;
+  if (editorGroups.some(item => item.id === activeRoute)) return activeRoute;
+  if (activeRoute === 'doubao') return main.querySelector('.doubao-question[open]')?.dataset.questionId || DATA.doubao.questions[0].id;
   if (activeRoute.startsWith('challenge')) return challengeChapter().id;
   if (activeRoute === 'practice') return practiceQuestions()[state.practiceIndex].chapter.id;
-  if (activeRoute === 'bank' || activeRoute === 'catalog') return DATA.chapters.some(chapter => chapter.id === bankScope) ? bankScope : state.last;
   if (activeRoute === 'architecture') return 'arch-' + DATA.architecture.nodes[0].id;
-  return editorGroups.some(group => group.id === activeRoute) ? activeRoute : 'home';
+  if (activeRoute === 'bank') return state.last;
+  return 'home';
 }
 async function openEditor() {
   editor.group = groupForCurrentPage();
+  editor.draft = {};
   renderEditorFields();
   editDialog.showModal();
-  if (!editor.dirty) await loadEditorContent();
-  else editorMessage('已恢复当前页面中尚未发布的修改。');
+  if (!localEditing) {
+    editor.ready = false;
+    editorFields.replaceChildren();
+    editorMessage('线上网站展示已发布内容。请双击电脑里的「打开学习手册.command」，在本地网页编辑和保存；之后可统一发布到这里。');
+    updateEditorControls();
+    return;
+  }
+  await loadEditorContent();
 }
 function closeEditor() {
   if (editor.busy) return;
-  editorToken.value = '';
+  persistEditorDraft();
   editDialog.close();
 }
-async function connectEditor() {
-  if (editor.busy) return;
-  const token = editorToken.value.trim();
-  if (!token) { editorMessage('请先填写 GitHub 授权令牌。', true); editorToken.focus(); return; }
-  editor.busy = true;
-  updateEditorControls();
-  editorMessage('正在验证仓库访问权限…');
-  try {
-    await authorizeEditorToken(token);
-    editorToken.value = '';
-    editDialog.querySelector('#editor-auth').open = false;
-    editorMessage('已连接 GitHub。修改后点击「保存并发布」。');
-  } catch (error) {
-    editorMessage(error.message, true);
-  } finally {
-    editor.busy = false;
-    updateEditorControls();
-  }
-  if (editor.token && !editor.ready) await loadEditorContent();
-}
-function sameEdits(left, right) {
-  const keys = Object.keys(left);
-  return keys.length === Object.keys(right).length && keys.every(key => left[key] === right[key]);
-}
-async function authorizeEditorToken(token) {
-  if (!token) throw new Error('请先填写 GitHub 授权令牌。');
-  const repository = await githubRequest('/repos/' + editorRepo, {token});
-  if (repository.full_name !== editorRepo || !repository.permissions?.push) throw new Error('当前账号没有此仓库的编辑权限。');
-  editor.token = token;
-}
-async function writeEditorFile(draft, sha, message) {
-  validateOverrides(draft);
-  if (!editor.token) throw new Error('请先连接 GitHub，以确认你有发布权限。');
-  if (Object.values(draft).some(text => text.includes(editor.token) || /\b(?:github_pat_|gh[pousr]_)[A-Za-z0-9_]{15,}/.test(text))) throw new Error('正文中发现授权凭据，请删除后再发布。');
-  try {
-    return await githubRequest(editorFile, {method: 'PUT', body: {message, content: encodeContent(draft), sha, branch: 'main'}});
-  } catch (error) {
-    // Confirm a lost response before allowing a retry of a possibly successful write.
-    const confirmed = await readEditorFile().catch(() => null);
-    if (!confirmed || !sameEdits(confirmed.value, draft)) throw error;
-    return {content: {sha: confirmed.sha}};
-  }
+function reloadLocalReading() {
+  sessionStorage.setItem('nico-local-save-scroll', String(scrollY));
+  location.reload();
 }
 async function saveEditor(event) {
   event.preventDefault();
   if (editor.busy || !editor.ready || !editor.dirty) return;
-  if (!editor.token) {
-    editDialog.querySelector('#editor-auth').open = true;
-    editorMessage('请先连接 GitHub，以确认你有发布权限。');
-    editorToken.focus();
-    return;
-  }
   editor.busy = true;
   updateEditorControls();
-  editorMessage('正在检查版本并保存…');
-  editDialog.querySelector('#editor-published').hidden = true;
+  editorMessage('正在保存本地 Markdown 文件…');
   try {
-    const latest = await readEditorFile();
-    if (latest.sha !== editor.sha) throw new Error('检测到其他设备的修改，尚未发布。请先下载修改备份，再载入最新内容，避免覆盖。');
-    const result = await writeEditorFile(editor.draft, editor.sha, 'Update handbook content from page editor');
-    editor.sha = result.content.sha;
-    editor.base = structuredClone(editor.draft);
+    const result = await localRequest('save', {group: editor.group, revision: editor.revision, values: editor.draft});
     editor.dirty = false;
-    editorMessage('已保存到 GitHub，正在自动发布。网站更新通常需要几分钟。');
-    editDialog.querySelector('#editor-published').hidden = false;
+    persistEditorDraft();
+    showPublishStatus(result);
+    reloadLocalReading();
   } catch (error) {
+    persistEditorDraft();
     editorMessage(error.message, true);
-  } finally {
-    editor.busy = false;
-    updateEditorControls();
-  }
+  } finally { editor.busy = false; updateEditorControls(); }
 }
 editorFields.addEventListener('input', event => {
-  const field = DATA.editorFields.find(item => item.key === event.target.dataset.fieldKey);
-  if (!field) return;
-  updateTermNotes(event.target);
-  if (event.target.value === field.value) delete editor.draft[field.key];
-  else editor.draft[field.key] = event.target.value;
+  if (!event.target.dataset.fieldKey) return;
+  editor.draft[event.target.dataset.fieldKey] = event.target.value;
   editor.dirty = !sameEdits(editor.draft, editor.base);
-  editDialog.querySelector('#editor-published').hidden = true;
-  editorMessage(editor.dirty ? '有未发布的修改，关闭编辑窗口后仍保留；刷新或关闭网页前请保存或下载备份。' : '内容未改变。');
+  updateTermNotes(event.target);
+  persistEditorDraft();
+  editorMessage(editor.dirty ? '草稿已暂存，点击「保存到本地」写入 Markdown 文件。' : '内容未改变。');
   updateEditorControls();
 });
-editorGroup.addEventListener('change', () => { editor.group = editorGroup.value; renderEditorFields(); });
+editorGroup.addEventListener('change', async () => {
+  persistEditorDraft();
+  editor.group = editorGroup.value;
+  await loadEditorContent();
+});
 editDialog.querySelector('#editor-form').addEventListener('submit', saveEditor);
 editDialog.querySelector('#editor-close').addEventListener('click', closeEditor);
 editDialog.addEventListener('cancel', event => { event.preventDefault(); closeEditor(); });
-editDialog.querySelector('#editor-connect').addEventListener('click', connectEditor);
-editDialog.querySelector('#editor-disconnect').addEventListener('click', () => {
-  editor.token = '';
-  editorToken.value = '';
-  editorMessage('已断开 GitHub，当前修改仍保留。');
-  updateEditorControls();
-});
-editDialog.querySelector('#editor-reload').addEventListener('click', () => {
-  if (editor.dirty && !confirm('载入最新内容将丢弃当前未发布修改。已下载备份并确认继续吗？')) return;
-  loadEditorContent();
-});
-editDialog.querySelector('#editor-discard').addEventListener('click', () => {
-  if (editor.dirty && !confirm('撤销本次尚未发布的修改？已发布内容不受影响。')) return;
-  editor.draft = structuredClone(editor.base);
+editDialog.querySelector('#editor-reload').addEventListener('click', async () => {
+  if (editor.dirty && !confirm('载入最新文件将放弃此篇未保存草稿，请先下载备份。继续吗？')) return;
   editor.dirty = false;
-  renderEditorFields();
-  editorMessage('已撤销未发布的修改。');
+  persistEditorDraft();
+  await loadEditorContent();
 });
 editDialog.querySelector('#editor-export').addEventListener('click', () => {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(editor.draft, null, 2)], {type: 'application/json'}));
+  const fields = DATA.editorFields.filter(item => item.group === editor.group);
+  const text = fields.map(field => '## ' + field.label + '\n\n' + editableValue(field)).join('\n\n');
+  const url = URL.createObjectURL(new Blob([text], {type: 'text/markdown;charset=utf-8'}));
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'handbook-content-backup.json';
+  link.download = editor.group + '-草稿.md';
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+editDialog.querySelector('#editor-publish').addEventListener('click', async () => {
+  if (editor.busy || editor.dirty) return;
+  editor.busy = true;
+  updateEditorControls();
+  editorMessage('正在核对远端版本并发布已保存的内容…');
+  try {
+    const result = await localRequest('publish', {});
+    showPublishStatus(result);
+    editorMessage('已同步到 GitHub。线上网站自动发布后刷新可见，本地阅读无需等待。');
+    editDialog.querySelector('#editor-published').hidden = false;
+  } catch (error) { editorMessage(error.message, true); }
+  finally { editor.busy = false; updateEditorControls(); }
 });
 document.addEventListener('click', event => {
   if (event.target.closest('[data-action="edit-page"]')) openEditor();
 });
 window.addEventListener('beforeunload', event => {
-  if (editor.dirty || editor.busy) { event.preventDefault(); event.returnValue = ''; }
+  if (editor.busy) { event.preventDefault(); event.returnValue = ''; }
+});
+window.addEventListener('load', () => {
+  const position = sessionStorage.getItem('nico-local-save-scroll');
+  if (position !== null) {
+    sessionStorage.removeItem('nico-local-save-scroll');
+    window.scrollTo({top: Number(position), behavior: 'instant'});
+    notify('已保存到本地，阅读内容已更新。');
+  }
 });

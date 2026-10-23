@@ -3,6 +3,11 @@
 import json
 from html import escape
 import unittest
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
 
 from scripts.sync_doubao import merge_questions, parse_questions, read_snapshot
 
@@ -18,6 +23,33 @@ def question(category, title, message_id):
 
 
 class DoubaoSyncTests(unittest.TestCase):
+    def test_apply_creates_markdown_without_changing_existing_documents(self):
+        from test_local_content import copy_project, ROOT
+        from content_store import load_documents
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            copy_project(root)
+            (root / 'scripts').mkdir()
+            shutil.copyfile(ROOT / 'scripts/sync_doubao.py', root / 'scripts/sync_doubao.py')
+            before = {p.name: p.read_bytes() for p in (root / 'content/documents').glob('*.md')}
+            answer = '新增完整口述答案，讨论证据与实际取舍。' * 15
+            body = f'## 题目二｜AI 技术知识点方向\n\n**题干：** 如何验证新增的隔离测试题目？\n\n**框架：**\n1. 核对来源\n\n**口述参考答案：**\n\n{answer}'
+            data = {'data': {'share_info': {'message_index_end': '2'}, 'message_snapshot': {'message_list': [message(2, body)]}}}
+            payload = ['thread_(token)/page', 'shareInfo', data]
+            html = root / 'fixture.html'
+            html.write_text(f'<script data-fn-args="{escape(json.dumps(payload), quote=True)}"></script>')
+            result = subprocess.run([sys.executable, 'scripts/sync_doubao.py', '--html', str(html), '--apply'], cwd=root, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            added = json.loads(result.stdout)['added']
+            self.assertEqual(len(added), 1)
+            _, values, _ = load_documents(root / 'content')
+            self.assertEqual(values[f'doubao/{added[0]}/answer'], answer)
+            for name, original in before.items():
+                self.assertEqual((root / 'content/documents' / name).read_bytes(), original)
+            built = subprocess.run([sys.executable, 'build.py', '--static'], cwd=root, capture_output=True, text=True)
+            self.assertEqual(built.returncode, 0, built.stderr)
+            self.assertIn('40 Doubao questions', built.stdout)
+
     def test_append_preserves_existing_and_second_run_is_noop(self):
         old = {**question('pm', '如何评估 AI？', 'old'), 'id': 'db-pm-17', 'supplement': 'Keep this supplement'}
         original = {'sourceUrl': 'https://www.doubao.com/thread/old', 'questions': [old]}

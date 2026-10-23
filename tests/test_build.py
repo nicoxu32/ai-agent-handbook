@@ -18,10 +18,21 @@ class EditableBuildTests(unittest.TestCase):
     def build(self, edits):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)
-            for name in ['build.py', 'template.html', 'workspace.js', 'workspace.css', 'editor.js', 'highlights.js', 'append.js', 'terms.js', 'source_blocks.py', 'doubao.js', 'architecture.json']:
+            for name in ['build.py', 'template.html', 'workspace.js', 'workspace.css', 'editor.js', 'highlights.js', 'append.js', 'terms.js', 'source_blocks.py', 'content_store.py', 'doubao.js', 'architecture.json']:
                 shutil.copyfile(ROOT / name, target / name)
             shutil.copytree(ROOT / 'content', target / 'content')
-            (target / 'content/edits.json').write_text(json.dumps(edits), encoding='utf-8')
+            from content_store import load_documents, document_text
+            manifest, values, _ = load_documents(target / 'content')
+            unknown = set(edits) - set(values)
+            if unknown:
+                (target / 'content/edits.json').write_text(json.dumps(edits), encoding='utf-8')
+            else:
+                values.update(edits)
+                for group, entry in manifest.items():
+                    if any(field['key'] in edits for field in entry['fields']):
+                        text = document_text(entry['title'], entry['fields'], values)
+                        (target / 'content/documents' / (group + '.md')).write_text(text)
+
             result = subprocess.run([sys.executable, 'build.py', '--static'], cwd=target, env=os.environ, capture_output=True, text=True)
             if result.returncode:
                 return result, None
@@ -108,7 +119,10 @@ class EditableBuildTests(unittest.TestCase):
         answer = BeautifulSoup(data['chapters'][0]['questions'][0]['answer'], 'html.parser')
         self.assertEqual(len(answer.find_all('p')), 2)
         self.assertEqual(len(answer.find_all('br')), 1)
-        self.assertEqual(data['edits'], edits)
+        self.assertEqual(data['edits'], {})
+        for field in data['editorFields']:
+            if field['key'] in edits:
+                self.assertEqual(field['value'], edits[field['key']])
         self.assertIn(source, data['source'])
 
     def test_rejects_unknown_or_empty_fields(self):

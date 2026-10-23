@@ -8,12 +8,16 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import sys
 import unicodedata
 from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from content_store import add_documents
+
 SOURCE_URL = 'https://www.doubao.com/thread/xVhxnbH6JuZhEG6sc'
 QUESTION_FILE = ROOT / 'content/doubao-interviews.json'
 
@@ -150,6 +154,20 @@ def main():
         with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=QUESTION_FILE.parent, delete=False) as temporary:
             json.dump(result, temporary, ensure_ascii=False, indent=2)
             temporary.write('\n')
+        # New questions get their own editable Markdown documents immediately.
+        groups = []
+        for question in result['questions']:
+            if question['id'] not in added:
+                continue
+            fields, values = [], {}
+            for name, label in [('title', '面试题'), ('framework', '回答框架'), ('answer', '口述参考答案'), ('supplement', '原文补充')]:
+                if not question[name]:
+                    continue
+                key = f"doubao/{question['id']}/{name}"
+                fields.append({'key': key, 'label': label, 'multiline': name != 'title'})
+                values[key] = question[name]
+            groups.append((question['id'], question['title'], fields, values))
+        add_documents(QUESTION_FILE.parent, groups)
         os.replace(temporary.name, QUESTION_FILE)
     print(json.dumps({
         'source': args.source_url, 'snapshotEnd': end, 'sourceQuestions': len(incoming),

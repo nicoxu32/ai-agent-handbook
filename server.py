@@ -8,6 +8,8 @@ import re
 import secrets
 import socket
 import threading
+import ipaddress
+import local_content
 from html.parser import HTMLParser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -71,7 +73,7 @@ def public_config():
 
 
 def load_chapters():
-    html = (ROOT / 'index.html').read_text(encoding='utf-8')
+    html = local_content.current_html(ROOT).decode('utf-8')
     match = re.search(r'<script id="handbook-data" type="application/json">(.*?)</script>', html, re.S)
     return {chapter['id']: chapter for chapter in json.loads(match.group(1))['chapters']}
 
@@ -190,10 +192,19 @@ class HandbookHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = urlsplit(self.path).path
-        if path == '/api/status':
+        if path == '/api/local/status':
+            if not self.local_request():
+                self.send_json(403, {'error': '本地文件编辑仅允许在这台电脑上访问。'})
+                return
+            self.send_json(200, {'app': 'nico-handbook-local-v1', 'token': SESSION_TOKEN, **local_content.status(ROOT)})
+        elif path == '/api/status':
             self.send_json(200, public_config())
         elif path in {'/', '/index.html'}:
-            payload = (ROOT / 'index.html').read_bytes()
+            try:
+                payload = local_content.current_html(ROOT)
+            except Exception:
+                self.send_json(500, {'error': '本地 Markdown 无法构建，请检查最近修改的文件；原文未被覆盖。'})
+                return
             self.send_response(200)
             self.send_header('Content-Type', 'text/html; charset=utf-8')
             self.send_header('Content-Length', str(len(payload)))
@@ -202,7 +213,41 @@ class HandbookHandler(BaseHTTPRequestHandler):
         else:
             self.send_json(404, {'error': '页面不存在。'})
 
+    def local_request(self):
+        host = urlsplit('http://' + self.headers.get('Host', '')).hostname
+        return ipaddress.ip_address(self.client_address[0]).is_loopback and host in {'localhost', '127.0.0.1', '::1'}
+
+    def local_post(self):
+        origin = self.headers.get('Origin')
+        host = self.headers.get('Host', '')
+        if not self.local_request() or (origin and origin != 'http://' + host) or self.headers.get('Sec-Fetch-Site') == 'cross-site' or not secrets.compare_digest(self.headers.get('X-Handbook-Token', ''), SESSION_TOKEN):
+            self.send_json(403, {'error': '本地写入校验失效，请在本机刷新后重试。'})
+            return
+        try:
+            length = int(self.headers.get('Content-Length', '0'))
+            if not 0 < length <= 3000000 or not self.headers.get('Content-Type', '').startswith('application/json'):
+                raise ValueError('请求格式不正确或过长。')
+            body = json.loads(self.rfile.read(length))
+            path = urlsplit(self.path).path
+            if path == '/api/local/document':
+                result = local_content.document(ROOT, body.get('group'))
+            elif path == '/api/local/save':
+                result = local_content.save(ROOT, body)
+            elif path == '/api/local/publish':
+                result = local_content.publish(ROOT)
+            else:
+                self.send_json(404, {'error': '接口不存在。'})
+                return
+            self.send_json(200, result)
+        except (ValueError, TypeError, KeyError) as error:
+            self.send_json(409, {'error': str(error)})
+        except Exception:
+            self.send_json(500, {'error': '操作未完成，请保留草稿后重试；已保存的 Markdown 文件仍在本地。'})
+
     def do_POST(self):
+        if urlsplit(self.path).path.startswith('/api/local/'):
+            self.local_post()
+            return
         if urlsplit(self.path).path != '/api/generate':
             self.send_json(404, {'error': '接口不存在。'})
             return

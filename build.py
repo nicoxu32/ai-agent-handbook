@@ -2,27 +2,33 @@ from pathlib import Path
 import argparse
 import json
 import re
-import hashlib
 import markdown
 from bs4 import BeautifulSoup
 from source_blocks import attach_source_blocks
+from content_store import load_documents
 
 ROOT = Path(__file__).resolve().parent
-SOURCE = ROOT / 'content' / 'handbook.md'
 parser = argparse.ArgumentParser(description='Build the handbook for local use or static hosting')
 parser.add_argument('--static', action='store_true', help='Build a static site without an AI backend')
 parser.add_argument('--output', type=Path, default=ROOT / 'index.html')
+parser.add_argument('--content-dir', type=Path, default=ROOT / 'content')
 args = parser.parse_args()
+CONTENT = args.content_dir
+SOURCE = CONTENT / 'handbook.md'
+DOCUMENTS, DOCUMENT_VALUES, DOCUMENT_REVISIONS = load_documents(CONTENT)
 GROUPS = ['模型基础', '知识库与检索', '智能体执行', '多模态与集成', '企业平台能力', '产品设计与运营']
 BOUNDS = [5, 13, 20, 24, 32, 36]
-EDITS = json.loads((ROOT / 'content/edits.json').read_text(encoding='utf-8'))
+EDITS = json.loads((CONTENT / 'edits.json').read_text(encoding='utf-8'))
 if not isinstance(EDITS, dict) or any(not isinstance(key, str) or not isinstance(value, str) for key, value in EDITS.items()):
     raise ValueError('Edits must be a mapping of field names to text')
+if DOCUMENTS and EDITS:
+    raise ValueError('Legacy web edits detected: merge content/edits.json into Markdown documents before building')
 FIELDS = []
 APPEND_TARGETS = {}
 
 
 def editable(key, label, value, group, multiline=True):
+    value = DOCUMENT_VALUES.get(key, value)
     FIELDS.append({'key': key, 'label': label, 'value': value, 'group': group, 'multiline': multiline})
     result = EDITS.get(key, value)
     limit = 40000 if multiline else 300
@@ -99,7 +105,7 @@ for match in re.finditer(r'^## (.+?)\n(.*?)(?=^## |\Z)', '## 七、' + appendix,
     extras.append({'id': extra_id, 'title': match.group(1).split('、', 1)[-1], 'html': render(extra_markdown), 'markdown': extra_markdown})
 if len(chapters) != 36 or any(len(c['questions']) != 3 for c in chapters):
     raise ValueError('Source must contain 36 chapters and three questions per chapter')
-layout = json.loads((ROOT / 'content/layout.json').read_text(encoding='utf-8'))
+layout = json.loads((CONTENT / 'layout.json').read_text(encoding='utf-8'))
 for page_id, page in layout['pages'].items():
     for key, label in [('title', '页面标题'), ('description', '页面介绍')]:
         page[key] = editable(f'page/{page_id}/{key}', label, page[key], page_id, key != 'title')
@@ -116,7 +122,7 @@ for trace_id, trace in architecture['traces'].items():
 linked_ids = {number for node in architecture['nodes'] for number in node['chapters']}
 if linked_ids != set(range(1, 37)):
     raise ValueError('Architecture must link all 36 knowledge points')
-doubao = json.loads((ROOT / 'content/doubao-interviews.json').read_text(encoding='utf-8'))
+doubao = json.loads((CONTENT / 'doubao-interviews.json').read_text(encoding='utf-8'))
 doubao_sources = doubao.get('sources', [doubao['sourceUrl']])
 doubao_export = ['# 豆包面试题', '来源：' + ' · '.join(f'[豆包分享 {index + 1}]({url})' for index, url in enumerate(doubao_sources)), '按原文整理。原文中的案例和经历表述为参考答案，不代表读者的真实履历。']
 doubao_ids = set()
@@ -163,10 +169,8 @@ for extra in extras:
     if extra['id'] in {'extra1', 'extra2', 'extra4'}:
         export.append(extra['markdown'])
 source = '\n\n'.join(export) + '\n'
-source_bytes = SOURCE.read_bytes()
-source_sha = hashlib.sha1(f'blob {len(source_bytes)}\0'.encode() + source_bytes).hexdigest()
-terms = json.loads((ROOT / 'content/terms.json').read_text(encoding='utf-8'))
-payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao, 'appendTargets': APPEND_TARGETS, 'handbookSourceSha': source_sha, 'terms': terms}, ensure_ascii=False).replace('<', '\\u003c')
+terms = json.loads((CONTENT / 'terms.json').read_text(encoding='utf-8'))
+payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao, 'appendTargets': APPEND_TARGETS, 'terms': terms, 'documentRevisions': DOCUMENT_REVISIONS}, ensure_ascii=False).replace('<', '\\u003c')
 template = (ROOT / 'template.html').read_text(encoding='utf-8')
 template = template.replace('__WORKSPACE_STYLE__', (ROOT / 'workspace.css').read_text(encoding='utf-8'))
 template = template.replace('__WORKSPACE_SCRIPT__', (ROOT / 'workspace.js').read_text(encoding='utf-8'))

@@ -1,0 +1,3512 @@
+{
+  "k01": {
+    "title": "LLM 与推理：模型为什么能回答，又为什么会答错？",
+    "fields": [
+      {
+        "key": "chapter/k01/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k01/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k01/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k01/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k01/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/01.1/title",
+        "label": "面试题 01.1",
+        "multiline": false
+      },
+      {
+        "key": "question/01.1/answer",
+        "label": "01.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/01.2/title",
+        "label": "面试题 01.2",
+        "multiline": false
+      },
+      {
+        "key": "question/01.2/answer",
+        "label": "01.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/01.3/title",
+        "label": "面试题 01.3",
+        "multiline": false
+      },
+      {
+        "key": "question/01.3/answer",
+        "label": "01.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k02": {
+    "title": "Token 与上下文：模型这次能看多少，为什么越聊越慢？",
+    "fields": [
+      {
+        "key": "chapter/k02/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k02/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k02/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k02/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k02/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/02.1/title",
+        "label": "面试题 02.1",
+        "multiline": false
+      },
+      {
+        "key": "question/02.1/answer",
+        "label": "02.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/02.2/title",
+        "label": "面试题 02.2",
+        "multiline": false
+      },
+      {
+        "key": "question/02.2/answer",
+        "label": "02.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/02.3/title",
+        "label": "面试题 02.3",
+        "multiline": false
+      },
+      {
+        "key": "question/02.3/answer",
+        "label": "02.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k03": {
+    "title": "Prompt：怎样把任务说清楚，而不是堆满要求？",
+    "fields": [
+      {
+        "key": "chapter/k03/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k03/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k03/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k03/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k03/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/03.1/title",
+        "label": "面试题 03.1",
+        "multiline": false
+      },
+      {
+        "key": "question/03.1/answer",
+        "label": "03.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/03.2/title",
+        "label": "面试题 03.2",
+        "multiline": false
+      },
+      {
+        "key": "question/03.2/answer",
+        "label": "03.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/03.3/title",
+        "label": "面试题 03.3",
+        "multiline": false
+      },
+      {
+        "key": "question/03.3/answer",
+        "label": "03.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k04": {
+    "title": "结构化输出：格式能读，不代表内容能直接执行",
+    "fields": [
+      {
+        "key": "chapter/k04/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k04/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k04/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k04/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k04/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/04.1/title",
+        "label": "面试题 04.1",
+        "multiline": false
+      },
+      {
+        "key": "question/04.1/answer",
+        "label": "04.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/04.2/title",
+        "label": "面试题 04.2",
+        "multiline": false
+      },
+      {
+        "key": "question/04.2/answer",
+        "label": "04.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/04.3/title",
+        "label": "面试题 04.3",
+        "multiline": false
+      },
+      {
+        "key": "question/04.3/answer",
+        "label": "04.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k05": {
+    "title": "幻觉与不确定性：怎样知道一句话到底有没有依据？",
+    "fields": [
+      {
+        "key": "chapter/k05/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k05/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k05/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k05/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k05/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/05.1/title",
+        "label": "面试题 05.1",
+        "multiline": false
+      },
+      {
+        "key": "question/05.1/answer",
+        "label": "05.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/05.2/title",
+        "label": "面试题 05.2",
+        "multiline": false
+      },
+      {
+        "key": "question/05.2/answer",
+        "label": "05.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/05.3/title",
+        "label": "面试题 05.3",
+        "multiline": false
+      },
+      {
+        "key": "question/05.3/answer",
+        "label": "05.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k06": {
+    "title": "文件解析与 OCR：读出了文字，为什么仍然读错了文件？",
+    "fields": [
+      {
+        "key": "chapter/k06/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k06/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k06/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k06/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k06/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/06.1/title",
+        "label": "面试题 06.1",
+        "multiline": false
+      },
+      {
+        "key": "question/06.1/answer",
+        "label": "06.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/06.2/title",
+        "label": "面试题 06.2",
+        "multiline": false
+      },
+      {
+        "key": "question/06.2/answer",
+        "label": "06.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/06.3/title",
+        "label": "面试题 06.3",
+        "multiline": false
+      },
+      {
+        "key": "question/06.3/answer",
+        "label": "06.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k07": {
+    "title": "分块：怎样让资料既找得准，又保留完整意思？",
+    "fields": [
+      {
+        "key": "chapter/k07/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k07/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k07/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k07/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k07/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/07.1/title",
+        "label": "面试题 07.1",
+        "multiline": false
+      },
+      {
+        "key": "question/07.1/answer",
+        "label": "07.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/07.2/title",
+        "label": "面试题 07.2",
+        "multiline": false
+      },
+      {
+        "key": "question/07.2/answer",
+        "label": "07.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/07.3/title",
+        "label": "面试题 07.3",
+        "multiline": false
+      },
+      {
+        "key": "question/07.3/answer",
+        "label": "07.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k08": {
+    "title": "Embedding 与向量检索：按意思搜索，是怎样实现的？",
+    "fields": [
+      {
+        "key": "chapter/k08/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k08/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k08/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k08/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k08/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/08.1/title",
+        "label": "面试题 08.1",
+        "multiline": false
+      },
+      {
+        "key": "question/08.1/answer",
+        "label": "08.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/08.2/title",
+        "label": "面试题 08.2",
+        "multiline": false
+      },
+      {
+        "key": "question/08.2/answer",
+        "label": "08.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/08.3/title",
+        "label": "面试题 08.3",
+        "multiline": false
+      },
+      {
+        "key": "question/08.3/answer",
+        "label": "08.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k09": {
+    "title": "关键词与混合检索：为什么懂语义仍需要精确搜索？",
+    "fields": [
+      {
+        "key": "chapter/k09/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k09/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k09/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k09/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k09/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/09.1/title",
+        "label": "面试题 09.1",
+        "multiline": false
+      },
+      {
+        "key": "question/09.1/answer",
+        "label": "09.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/09.2/title",
+        "label": "面试题 09.2",
+        "multiline": false
+      },
+      {
+        "key": "question/09.2/answer",
+        "label": "09.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/09.3/title",
+        "label": "面试题 09.3",
+        "multiline": false
+      },
+      {
+        "key": "question/09.3/answer",
+        "label": "09.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k10": {
+    "title": "Rerank：候选已经找到了，怎样选出真正有用的证据？",
+    "fields": [
+      {
+        "key": "chapter/k10/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k10/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k10/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k10/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k10/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/10.1/title",
+        "label": "面试题 10.1",
+        "multiline": false
+      },
+      {
+        "key": "question/10.1/answer",
+        "label": "10.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/10.2/title",
+        "label": "面试题 10.2",
+        "multiline": false
+      },
+      {
+        "key": "question/10.2/answer",
+        "label": "10.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/10.3/title",
+        "label": "面试题 10.3",
+        "multiline": false
+      },
+      {
+        "key": "question/10.3/answer",
+        "label": "10.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k11": {
+    "title": "RAG 与引用：怎样让答案有据可查？",
+    "fields": [
+      {
+        "key": "chapter/k11/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k11/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k11/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k11/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k11/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/11.1/title",
+        "label": "面试题 11.1",
+        "multiline": false
+      },
+      {
+        "key": "question/11.1/answer",
+        "label": "11.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/11.2/title",
+        "label": "面试题 11.2",
+        "multiline": false
+      },
+      {
+        "key": "question/11.2/answer",
+        "label": "11.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/11.3/title",
+        "label": "面试题 11.3",
+        "multiline": false
+      },
+      {
+        "key": "question/11.3/answer",
+        "label": "11.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k12": {
+    "title": "元数据与知识更新：如何让答案用对版本和适用范围？",
+    "fields": [
+      {
+        "key": "chapter/k12/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k12/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k12/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k12/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k12/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/12.1/title",
+        "label": "面试题 12.1",
+        "multiline": false
+      },
+      {
+        "key": "question/12.1/answer",
+        "label": "12.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/12.2/title",
+        "label": "面试题 12.2",
+        "multiline": false
+      },
+      {
+        "key": "question/12.2/answer",
+        "label": "12.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/12.3/title",
+        "label": "面试题 12.3",
+        "multiline": false
+      },
+      {
+        "key": "question/12.3/answer",
+        "label": "12.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k13": {
+    "title": "表格计算与完整汇总：什么时候必须换一条处理路径？",
+    "fields": [
+      {
+        "key": "chapter/k13/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k13/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k13/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k13/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k13/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/13.1/title",
+        "label": "面试题 13.1",
+        "multiline": false
+      },
+      {
+        "key": "question/13.1/answer",
+        "label": "13.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/13.2/title",
+        "label": "面试题 13.2",
+        "multiline": false
+      },
+      {
+        "key": "question/13.2/answer",
+        "label": "13.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/13.3/title",
+        "label": "面试题 13.3",
+        "multiline": false
+      },
+      {
+        "key": "question/13.3/answer",
+        "label": "13.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k14": {
+    "title": "Agent 执行循环：下一步由谁决定，什么时候该停？",
+    "fields": [
+      {
+        "key": "chapter/k14/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k14/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k14/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k14/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k14/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/14.1/title",
+        "label": "面试题 14.1",
+        "multiline": false
+      },
+      {
+        "key": "question/14.1/answer",
+        "label": "14.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/14.2/title",
+        "label": "面试题 14.2",
+        "multiline": false
+      },
+      {
+        "key": "question/14.2/answer",
+        "label": "14.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/14.3/title",
+        "label": "面试题 14.3",
+        "multiline": false
+      },
+      {
+        "key": "question/14.3/answer",
+        "label": "14.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k15": {
+    "title": "工具调用：模型提出动作，系统如何把动作办成？",
+    "fields": [
+      {
+        "key": "chapter/k15/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k15/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k15/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k15/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k15/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/15.1/title",
+        "label": "面试题 15.1",
+        "multiline": false
+      },
+      {
+        "key": "question/15.1/answer",
+        "label": "15.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/15.2/title",
+        "label": "面试题 15.2",
+        "multiline": false
+      },
+      {
+        "key": "question/15.2/answer",
+        "label": "15.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/15.3/title",
+        "label": "面试题 15.3",
+        "multiline": false
+      },
+      {
+        "key": "question/15.3/answer",
+        "label": "15.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k16": {
+    "title": "Workflow：把确定的流程固定下来，把变化留给模型",
+    "fields": [
+      {
+        "key": "chapter/k16/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k16/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k16/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k16/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k16/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/16.1/title",
+        "label": "面试题 16.1",
+        "multiline": false
+      },
+      {
+        "key": "question/16.1/answer",
+        "label": "16.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/16.2/title",
+        "label": "面试题 16.2",
+        "multiline": false
+      },
+      {
+        "key": "question/16.2/answer",
+        "label": "16.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/16.3/title",
+        "label": "面试题 16.3",
+        "multiline": false
+      },
+      {
+        "key": "question/16.3/answer",
+        "label": "16.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k17": {
+    "title": "MCP：统一的到底是接入协议，还是业务能力？",
+    "fields": [
+      {
+        "key": "chapter/k17/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k17/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k17/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k17/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k17/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/17.1/title",
+        "label": "面试题 17.1",
+        "multiline": false
+      },
+      {
+        "key": "question/17.1/answer",
+        "label": "17.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/17.2/title",
+        "label": "面试题 17.2",
+        "multiline": false
+      },
+      {
+        "key": "question/17.2/answer",
+        "label": "17.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/17.3/title",
+        "label": "面试题 17.3",
+        "multiline": false
+      },
+      {
+        "key": "question/17.3/answer",
+        "label": "17.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k18": {
+    "title": "任务状态与短期记忆：怎样知道现在该按哪个条件继续？",
+    "fields": [
+      {
+        "key": "chapter/k18/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k18/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k18/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k18/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k18/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/18.1/title",
+        "label": "面试题 18.1",
+        "multiline": false
+      },
+      {
+        "key": "question/18.1/answer",
+        "label": "18.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/18.2/title",
+        "label": "面试题 18.2",
+        "multiline": false
+      },
+      {
+        "key": "question/18.2/answer",
+        "label": "18.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/18.3/title",
+        "label": "面试题 18.3",
+        "multiline": false
+      },
+      {
+        "key": "question/18.3/answer",
+        "label": "18.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k19": {
+    "title": "长期记忆：记什么、什么时候用、什么时候该忘？",
+    "fields": [
+      {
+        "key": "chapter/k19/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k19/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k19/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k19/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k19/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/19.1/title",
+        "label": "面试题 19.1",
+        "multiline": false
+      },
+      {
+        "key": "question/19.1/answer",
+        "label": "19.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/19.2/title",
+        "label": "面试题 19.2",
+        "multiline": false
+      },
+      {
+        "key": "question/19.2/answer",
+        "label": "19.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/19.3/title",
+        "label": "面试题 19.3",
+        "multiline": false
+      },
+      {
+        "key": "question/19.3/answer",
+        "label": "19.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k20": {
+    "title": "多智能体：怎样分工才值得增加协调成本？",
+    "fields": [
+      {
+        "key": "chapter/k20/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k20/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k20/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k20/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k20/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/20.1/title",
+        "label": "面试题 20.1",
+        "multiline": false
+      },
+      {
+        "key": "question/20.1/answer",
+        "label": "20.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/20.2/title",
+        "label": "面试题 20.2",
+        "multiline": false
+      },
+      {
+        "key": "question/20.2/answer",
+        "label": "20.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/20.3/title",
+        "label": "面试题 20.3",
+        "multiline": false
+      },
+      {
+        "key": "question/20.3/answer",
+        "label": "20.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k21": {
+    "title": "ASR 与会议处理：听清楚、分清人、提对待办是三件事",
+    "fields": [
+      {
+        "key": "chapter/k21/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k21/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k21/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k21/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k21/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/21.1/title",
+        "label": "面试题 21.1",
+        "multiline": false
+      },
+      {
+        "key": "question/21.1/answer",
+        "label": "21.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/21.2/title",
+        "label": "面试题 21.2",
+        "multiline": false
+      },
+      {
+        "key": "question/21.2/answer",
+        "label": "21.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/21.3/title",
+        "label": "面试题 21.3",
+        "multiline": false
+      },
+      {
+        "key": "question/21.3/answer",
+        "label": "21.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k22": {
+    "title": "图像理解与生成：看得懂、搜得到、画得好是不同能力",
+    "fields": [
+      {
+        "key": "chapter/k22/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k22/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k22/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k22/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k22/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/22.1/title",
+        "label": "面试题 22.1",
+        "multiline": false
+      },
+      {
+        "key": "question/22.1/answer",
+        "label": "22.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/22.2/title",
+        "label": "面试题 22.2",
+        "multiline": false
+      },
+      {
+        "key": "question/22.2/answer",
+        "label": "22.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/22.3/title",
+        "label": "面试题 22.3",
+        "multiline": false
+      },
+      {
+        "key": "question/22.3/answer",
+        "label": "22.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k23": {
+    "title": "第三方 API 与账号授权：代表用户办事，需要哪些前提？",
+    "fields": [
+      {
+        "key": "chapter/k23/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k23/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k23/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k23/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k23/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/23.1/title",
+        "label": "面试题 23.1",
+        "multiline": false
+      },
+      {
+        "key": "question/23.1/answer",
+        "label": "23.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/23.2/title",
+        "label": "面试题 23.2",
+        "multiline": false
+      },
+      {
+        "key": "question/23.2/answer",
+        "label": "23.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/23.3/title",
+        "label": "面试题 23.3",
+        "multiline": false
+      },
+      {
+        "key": "question/23.3/answer",
+        "label": "23.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k24": {
+    "title": "云手机与界面自动化：点击成功，为什么不等于任务成功？",
+    "fields": [
+      {
+        "key": "chapter/k24/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k24/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k24/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k24/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k24/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/24.1/title",
+        "label": "面试题 24.1",
+        "multiline": false
+      },
+      {
+        "key": "question/24.1/answer",
+        "label": "24.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/24.2/title",
+        "label": "面试题 24.2",
+        "multiline": false
+      },
+      {
+        "key": "question/24.2/answer",
+        "label": "24.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/24.3/title",
+        "label": "面试题 24.3",
+        "multiline": false
+      },
+      {
+        "key": "question/24.3/answer",
+        "label": "24.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k25": {
+    "title": "多模型路由：怎样选模型，才能同时满足质量与成本？",
+    "fields": [
+      {
+        "key": "chapter/k25/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k25/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k25/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k25/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k25/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/25.1/title",
+        "label": "面试题 25.1",
+        "multiline": false
+      },
+      {
+        "key": "question/25.1/answer",
+        "label": "25.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/25.2/title",
+        "label": "面试题 25.2",
+        "multiline": false
+      },
+      {
+        "key": "question/25.2/answer",
+        "label": "25.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/25.3/title",
+        "label": "面试题 25.3",
+        "multiline": false
+      },
+      {
+        "key": "question/25.3/answer",
+        "label": "25.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k26": {
+    "title": "统一网关与限流：并发、RPM、TPM 与配额各管什么？",
+    "fields": [
+      {
+        "key": "chapter/k26/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k26/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k26/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k26/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k26/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/26.1/title",
+        "label": "面试题 26.1",
+        "multiline": false
+      },
+      {
+        "key": "question/26.1/answer",
+        "label": "26.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/26.2/title",
+        "label": "面试题 26.2",
+        "multiline": false
+      },
+      {
+        "key": "question/26.2/answer",
+        "label": "26.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/26.3/title",
+        "label": "面试题 26.3",
+        "multiline": false
+      },
+      {
+        "key": "question/26.3/answer",
+        "label": "26.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k27": {
+    "title": "租户与权限隔离：谁能看什么，必须在哪些位置生效？",
+    "fields": [
+      {
+        "key": "chapter/k27/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k27/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k27/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k27/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k27/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/27.1/title",
+        "label": "面试题 27.1",
+        "multiline": false
+      },
+      {
+        "key": "question/27.1/answer",
+        "label": "27.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/27.2/title",
+        "label": "面试题 27.2",
+        "multiline": false
+      },
+      {
+        "key": "question/27.2/answer",
+        "label": "27.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/27.3/title",
+        "label": "面试题 27.3",
+        "multiline": false
+      },
+      {
+        "key": "question/27.3/answer",
+        "label": "27.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k28": {
+    "title": "提示词注入防护：为什么资料里的话不能变成系统命令？",
+    "fields": [
+      {
+        "key": "chapter/k28/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k28/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k28/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k28/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k28/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/28.1/title",
+        "label": "面试题 28.1",
+        "multiline": false
+      },
+      {
+        "key": "question/28.1/answer",
+        "label": "28.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/28.2/title",
+        "label": "面试题 28.2",
+        "multiline": false
+      },
+      {
+        "key": "question/28.2/answer",
+        "label": "28.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/28.3/title",
+        "label": "面试题 28.3",
+        "multiline": false
+      },
+      {
+        "key": "question/28.3/answer",
+        "label": "28.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k29": {
+    "title": "异步、幂等与恢复：超时之后，怎样确认到底做没做？",
+    "fields": [
+      {
+        "key": "chapter/k29/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k29/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k29/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k29/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k29/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/29.1/title",
+        "label": "面试题 29.1",
+        "multiline": false
+      },
+      {
+        "key": "question/29.1/answer",
+        "label": "29.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/29.2/title",
+        "label": "面试题 29.2",
+        "multiline": false
+      },
+      {
+        "key": "question/29.2/answer",
+        "label": "29.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/29.3/title",
+        "label": "面试题 29.3",
+        "multiline": false
+      },
+      {
+        "key": "question/29.3/answer",
+        "label": "29.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k30": {
+    "title": "日志与链路追踪：怎样把‘慢’和‘答错’定位到具体一步？",
+    "fields": [
+      {
+        "key": "chapter/k30/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k30/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k30/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k30/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k30/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/30.1/title",
+        "label": "面试题 30.1",
+        "multiline": false
+      },
+      {
+        "key": "question/30.1/answer",
+        "label": "30.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/30.2/title",
+        "label": "面试题 30.2",
+        "multiline": false
+      },
+      {
+        "key": "question/30.2/answer",
+        "label": "30.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/30.3/title",
+        "label": "面试题 30.3",
+        "multiline": false
+      },
+      {
+        "key": "question/30.3/answer",
+        "label": "30.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k31": {
+    "title": "评测体系：怎么证明系统更好，而不是刚好答对了几题？",
+    "fields": [
+      {
+        "key": "chapter/k31/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k31/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k31/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k31/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k31/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/31.1/title",
+        "label": "面试题 31.1",
+        "multiline": false
+      },
+      {
+        "key": "question/31.1/answer",
+        "label": "31.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/31.2/title",
+        "label": "面试题 31.2",
+        "multiline": false
+      },
+      {
+        "key": "question/31.2/answer",
+        "label": "31.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/31.3/title",
+        "label": "面试题 31.3",
+        "multiline": false
+      },
+      {
+        "key": "question/31.3/answer",
+        "label": "31.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k32": {
+    "title": "版本发布与资产管理：怎样更新能力，又能解释和恢复变化？",
+    "fields": [
+      {
+        "key": "chapter/k32/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k32/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k32/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k32/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k32/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/32.1/title",
+        "label": "面试题 32.1",
+        "multiline": false
+      },
+      {
+        "key": "question/32.1/answer",
+        "label": "32.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/32.2/title",
+        "label": "面试题 32.2",
+        "multiline": false
+      },
+      {
+        "key": "question/32.2/answer",
+        "label": "32.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/32.3/title",
+        "label": "面试题 32.3",
+        "multiline": false
+      },
+      {
+        "key": "question/32.3/answer",
+        "label": "32.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k33": {
+    "title": "场景选择与优先级：第一版先证明哪件事值得做？",
+    "fields": [
+      {
+        "key": "chapter/k33/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k33/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k33/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k33/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k33/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/33.1/title",
+        "label": "面试题 33.1",
+        "multiline": false
+      },
+      {
+        "key": "question/33.1/answer",
+        "label": "33.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/33.2/title",
+        "label": "面试题 33.2",
+        "multiline": false
+      },
+      {
+        "key": "question/33.2/answer",
+        "label": "33.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/33.3/title",
+        "label": "面试题 33.3",
+        "multiline": false
+      },
+      {
+        "key": "question/33.3/answer",
+        "label": "33.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k34": {
+    "title": "可视化编排与人工介入：让用户在真正需要判断的地方参与",
+    "fields": [
+      {
+        "key": "chapter/k34/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k34/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k34/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k34/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k34/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/34.1/title",
+        "label": "面试题 34.1",
+        "multiline": false
+      },
+      {
+        "key": "question/34.1/answer",
+        "label": "34.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/34.2/title",
+        "label": "面试题 34.2",
+        "multiline": false
+      },
+      {
+        "key": "question/34.2/answer",
+        "label": "34.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/34.3/title",
+        "label": "面试题 34.3",
+        "multiline": false
+      },
+      {
+        "key": "question/34.3/answer",
+        "label": "34.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k35": {
+    "title": "成本收益与计费：怎样算清一个可用结果到底值不值？",
+    "fields": [
+      {
+        "key": "chapter/k35/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k35/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k35/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k35/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k35/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/35.1/title",
+        "label": "面试题 35.1",
+        "multiline": false
+      },
+      {
+        "key": "question/35.1/answer",
+        "label": "35.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/35.2/title",
+        "label": "面试题 35.2",
+        "multiline": false
+      },
+      {
+        "key": "question/35.2/answer",
+        "label": "35.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/35.3/title",
+        "label": "面试题 35.3",
+        "multiline": false
+      },
+      {
+        "key": "question/35.3/answer",
+        "label": "35.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "k36": {
+    "title": "用户反馈与持续优化：怎样把抱怨变成有证据的改进？",
+    "fields": [
+      {
+        "key": "chapter/k36/title",
+        "label": "知识点标题",
+        "multiline": false
+      },
+      {
+        "key": "chapter/k36/intro",
+        "label": "先这样理解",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k36/decision",
+        "label": "放到产品里怎么判断",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k36/scenarios",
+        "label": "项目中的应用场景",
+        "multiline": true
+      },
+      {
+        "key": "chapter/k36/troubleshooting",
+        "label": "应用中经常遇到的问题",
+        "multiline": true
+      },
+      {
+        "key": "question/36.1/title",
+        "label": "面试题 36.1",
+        "multiline": false
+      },
+      {
+        "key": "question/36.1/answer",
+        "label": "36.1 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/36.2/title",
+        "label": "面试题 36.2",
+        "multiline": false
+      },
+      {
+        "key": "question/36.2/answer",
+        "label": "36.2 口述答案",
+        "multiline": true
+      },
+      {
+        "key": "question/36.3/title",
+        "label": "面试题 36.3",
+        "multiline": false
+      },
+      {
+        "key": "question/36.3/answer",
+        "label": "36.3 口述答案",
+        "multiline": true
+      }
+    ]
+  },
+  "extra0": {
+    "title": "extra0",
+    "fields": [
+      {
+        "key": "extra/extra0",
+        "label": "配套阅读正文",
+        "multiline": true
+      }
+    ]
+  },
+  "extra1": {
+    "title": "extra1",
+    "fields": [
+      {
+        "key": "extra/extra1",
+        "label": "配套阅读正文",
+        "multiline": true
+      }
+    ]
+  },
+  "extra2": {
+    "title": "extra2",
+    "fields": [
+      {
+        "key": "extra/extra2",
+        "label": "配套阅读正文",
+        "multiline": true
+      }
+    ]
+  },
+  "extra4": {
+    "title": "extra4",
+    "fields": [
+      {
+        "key": "extra/extra4",
+        "label": "配套阅读正文",
+        "multiline": true
+      }
+    ]
+  },
+  "home": {
+    "title": "home",
+    "fields": [
+      {
+        "key": "page/home/title",
+        "label": "页面标题",
+        "multiline": false
+      },
+      {
+        "key": "page/home/description",
+        "label": "页面介绍",
+        "multiline": true
+      },
+      {
+        "key": "round/0/title",
+        "label": "第 1 轮 · 学习轮次标题",
+        "multiline": false
+      },
+      {
+        "key": "round/0/description",
+        "label": "第 1 轮 · 学习目标",
+        "multiline": true
+      },
+      {
+        "key": "round/1/title",
+        "label": "第 2 轮 · 学习轮次标题",
+        "multiline": false
+      },
+      {
+        "key": "round/1/description",
+        "label": "第 2 轮 · 学习目标",
+        "multiline": true
+      },
+      {
+        "key": "round/2/title",
+        "label": "第 3 轮 · 学习轮次标题",
+        "multiline": false
+      },
+      {
+        "key": "round/2/description",
+        "label": "第 3 轮 · 学习目标",
+        "multiline": true
+      }
+    ]
+  },
+  "catalog": {
+    "title": "catalog",
+    "fields": [
+      {
+        "key": "page/catalog/title",
+        "label": "页面标题",
+        "multiline": false
+      },
+      {
+        "key": "page/catalog/description",
+        "label": "页面介绍",
+        "multiline": true
+      }
+    ]
+  },
+  "architecture": {
+    "title": "architecture",
+    "fields": [
+      {
+        "key": "page/architecture/title",
+        "label": "页面标题",
+        "multiline": false
+      },
+      {
+        "key": "page/architecture/description",
+        "label": "页面介绍",
+        "multiline": true
+      }
+    ]
+  },
+  "bank": {
+    "title": "bank",
+    "fields": [
+      {
+        "key": "page/bank/title",
+        "label": "页面标题",
+        "multiline": false
+      },
+      {
+        "key": "page/bank/description",
+        "label": "页面介绍",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-goal": {
+    "title": "arch-goal",
+    "fields": [
+      {
+        "key": "architecture/goal/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/goal/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/goal/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/goal/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-scope": {
+    "title": "arch-scope",
+    "fields": [
+      {
+        "key": "architecture/scope/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/scope/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/scope/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/scope/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-plan": {
+    "title": "arch-plan",
+    "fields": [
+      {
+        "key": "architecture/plan/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/plan/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/plan/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/plan/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-knowledge": {
+    "title": "arch-knowledge",
+    "fields": [
+      {
+        "key": "architecture/knowledge/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/knowledge/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/knowledge/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/knowledge/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-multimodal": {
+    "title": "arch-multimodal",
+    "fields": [
+      {
+        "key": "architecture/multimodal/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/multimodal/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/multimodal/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/multimodal/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-memory": {
+    "title": "arch-memory",
+    "fields": [
+      {
+        "key": "architecture/memory/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/memory/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/memory/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/memory/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-model": {
+    "title": "arch-model",
+    "fields": [
+      {
+        "key": "architecture/model/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/model/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/model/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/model/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-check": {
+    "title": "arch-check",
+    "fields": [
+      {
+        "key": "architecture/check/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/check/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/check/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/check/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-tools": {
+    "title": "arch-tools",
+    "fields": [
+      {
+        "key": "architecture/tools/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/tools/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/tools/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/tools/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-receipt": {
+    "title": "arch-receipt",
+    "fields": [
+      {
+        "key": "architecture/receipt/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/receipt/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/receipt/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/receipt/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-delivery": {
+    "title": "arch-delivery",
+    "fields": [
+      {
+        "key": "architecture/delivery/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/delivery/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/delivery/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/delivery/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-routing": {
+    "title": "arch-routing",
+    "fields": [
+      {
+        "key": "architecture/routing/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/routing/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/routing/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/routing/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-security": {
+    "title": "arch-security",
+    "fields": [
+      {
+        "key": "architecture/security/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/security/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/security/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/security/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-operations": {
+    "title": "arch-operations",
+    "fields": [
+      {
+        "key": "architecture/operations/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/operations/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/operations/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/operations/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "arch-value": {
+    "title": "arch-value",
+    "fields": [
+      {
+        "key": "architecture/value/title",
+        "label": "节点名称",
+        "multiline": false
+      },
+      {
+        "key": "architecture/value/description",
+        "label": "节点说明",
+        "multiline": true
+      },
+      {
+        "key": "architecture/value/input",
+        "label": "输入",
+        "multiline": true
+      },
+      {
+        "key": "architecture/value/output",
+        "label": "产出",
+        "multiline": true
+      }
+    ]
+  },
+  "trace-all": {
+    "title": "trace-all",
+    "fields": [
+      {
+        "key": "trace/all/title",
+        "label": "路径名称",
+        "multiline": false
+      },
+      {
+        "key": "trace/all/description",
+        "label": "路径说明",
+        "multiline": true
+      }
+    ]
+  },
+  "trace-report": {
+    "title": "trace-report",
+    "fields": [
+      {
+        "key": "trace/report/title",
+        "label": "路径名称",
+        "multiline": false
+      },
+      {
+        "key": "trace/report/description",
+        "label": "路径说明",
+        "multiline": true
+      }
+    ]
+  },
+  "trace-execute": {
+    "title": "trace-execute",
+    "fields": [
+      {
+        "key": "trace/execute/title",
+        "label": "路径名称",
+        "multiline": false
+      },
+      {
+        "key": "trace/execute/description",
+        "label": "路径说明",
+        "multiline": true
+      }
+    ]
+  },
+  "trace-recover": {
+    "title": "trace-recover",
+    "fields": [
+      {
+        "key": "trace/recover/title",
+        "label": "路径名称",
+        "multiline": false
+      },
+      {
+        "key": "trace/recover/description",
+        "label": "路径说明",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-01": {
+    "title": "当你负责的某个功能想用上 AI，你是怎么判断\"这个问题到底该用大模型解决，还是用传统规则/算法解决\"的？能不能结合你做过的一个具体例子讲讲。",
+    "fields": [
+      {
+        "key": "doubao/db-pm-01/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-01/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-02": {
+    "title": "很多 AI 功能 demo 演示效果很好，一上线就\"翻车\"。作为产品经理，你会怎么在设计阶段就预判并规避这种情况？结合你做过的例子讲讲。",
+    "fields": [
+      {
+        "key": "doubao/db-pm-02/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-02/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-02/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-02/supplement",
+        "label": "原文补充：金句与案例",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-01": {
+    "title": "讲讲 RAG（检索增强生成）的原理，以及它相比把资料直接塞进提示词有什么优势？什么场景下你会优先用 RAG？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-01/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-01/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-01/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-01/supplement",
+        "label": "原文补充：金句与案例",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-03": {
+    "title": "很多 AI 功能是\"有 AI 没 AI 都行\"的伪需求。作为产品经理，你怎么判断一个 AI 功能到底是不是真需求、值不值得做？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-03/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-03/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-03/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-02": {
+    "title": "讲讲大模型的上下文窗口，以及什么是\"上下文工程\"？它为什么重要？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-02/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-02/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-02/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-04": {
+    "title": "Agent 类产品和传统功能型产品在体验设计上最大的不同是什么？你会怎么设计，让用户愿意信任并放手交给 Agent 去执行任务？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-04/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-04/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-04/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-03": {
+    "title": "讲讲大模型的\"长期记忆 / 长记忆\"机制，它是怎么实现的？产品上一般怎么用？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-03/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-03/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-03/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-05": {
+    "title": "你的 AI 功能上线了、用户反馈和效果都不错，但公司要求你把它做成能持续赚钱的业务。你会怎么设计它的商业化路径？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-05/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-05/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-05/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-04": {
+    "title": "讲讲大模型的微调（Fine-tuning）。什么场景需要微调、什么场景不需要？微调一般有哪几种方式？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-04/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-04/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-04/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-06": {
+    "title": "面对同一个 AI 需求，你怎么决定用闭源大模型 API、开源模型自建、还是直接用市面上现成的 AI 能力？判断依据是什么？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-06/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-06/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-06/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-05": {
+    "title": "讲讲 Agent 的基本架构，它和\"单次调用一次大模型\"有什么本质不同？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-05/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-05/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-05/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-07": {
+    "title": "AI 产品的最终效果，很大程度上取决于算法和工程能不能落地。作为产品经理，你会怎么和算法、工程高效协作，把一个 AI 需求真正做好？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-07/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-07/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-07/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-06": {
+    "title": "讲讲 token 是什么、token 计费大概怎么算，以及为什么优化 token 消耗很重要？有哪些常见优化手段？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-06/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-06/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-06/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-08": {
+    "title": "多模态 AI 产品（同时处理文字、图片、语音）和纯文本产品相比，在体验设计上会新增哪些难点？你会怎么设计？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-08/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-08/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-08/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-07": {
+    "title": "讲讲 Embedding（向量嵌入）和向量检索的原理，为什么说它是很多 AI 应用的基础？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-07/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-07/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-07/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-09": {
+    "title": "你负责一个 AI 功能，怎么给它搭建一套评测体系，判断它上线后到底好不好、有没有退化？请讲讲你的思路。",
+    "fields": [
+      {
+        "key": "doubao/db-pm-09/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-09/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-09/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-08": {
+    "title": "怎么评估一个大模型的好坏？有哪些常用的评估指标和方法？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-08/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-08/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-08/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-10": {
+    "title": "有些 AI 产品经理觉得\"提示词是算法、工程的事\"。你怎么看？你会怎么管理和优化自己产品的提示词？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-10/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-10/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-10/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-09": {
+    "title": "讲讲大模型的\"幻觉\"问题——它为什么会产生？产品上一般怎么缓解？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-09/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-09/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-09/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-11": {
+    "title": "AI 产品刚上线，用户少、数据少，效果调不好、用户又不来——你怎么破这个\"冷启动\"难题？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-11/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-11/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-11/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-10": {
+    "title": "讲讲多模态大模型是怎么实现\"同时理解文字和图片\"的？它的基本架构是什么？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-10/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-10/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-10/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-12": {
+    "title": "AI 产品会收集大量用户数据——对话记录、上传的图片、个人画像。作为产品经理，你怎么在产品设计阶段就把隐私合规考虑进去？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-12/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-12/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-12/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-11": {
+    "title": "讲讲思维链（Chain-of-Thought，简称 CoT）——它是什么？为什么能明显提升模型的复杂推理能力？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-11/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-11/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-11/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-13": {
+    "title": "你的 AI 产品出了一个严重错误——比如给了用户错误的医疗/金融信息，引发了用户不满甚至舆情。作为产品经理，你会怎么处理，并重建用户信任？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-13/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-13/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-13/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-12": {
+    "title": "讲讲\"知识蒸馏\"（Knowledge Distillation）——它是什么？主要用来解决什么问题？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-12/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-12/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-12/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-14": {
+    "title": "领导给你一个很模糊的想法，比如\"我们想做一个 AI 助手，提升用户效率\"。你会怎么把它拆解成可落地、可排优先级的功能？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-14/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-14/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-14/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-13": {
+    "title": "讲讲\"高级 RAG\"（Advanced RAG）——相比基础 RAG，它通常多了哪些优化？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-13/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-13/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-13/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-15": {
+    "title": "一个成熟、稳定的传统软件产品要\"AI 化\"升级。作为产品经理，你会怎么决定哪些环节该引入 AI，以及如何平稳过渡、不伤害老用户？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-15/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-15/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-15/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-14": {
+    "title": "讲讲模型\"量化\"（Quantization）——它是什么？主要用来解决什么问题？有什么代价？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-14/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-14/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-14/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-16": {
+    "title": "AI 越来越强，但也不能全交给它。作为产品经理，你会怎么设计\"人和 AI\"的分工边界？哪些事该交给 AI，哪些必须留给人？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-16/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-16/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-16/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-15": {
+    "title": "讲讲大模型的\"对齐\"（Alignment）——它是做什么的？一般是怎么实现的？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-15/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-15/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-15/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-17": {
+    "title": "现在大家都能调用相似的大模型，AI 产品的技术门槛在降低。你怎么让一个 AI 产品做出差异化、形成自己的护城河？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-17/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-17/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-17/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-16": {
+    "title": "讲讲 Agent 里的\"Function Calling\"（工具调用）——它是什么？是怎么让 Agent 真正\"动手做事\"的？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-16/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-16/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-16/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-18": {
+    "title": "你想在公司内部推动一个新的 AI 项目立项。你会怎么说服老板、争取到资源，同时管理好他对 AI 的预期？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-18/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-18/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-18/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-17": {
+    "title": "讲讲大模型生成时的采样参数——比如\"温度（temperature）\"和\"top-p\"——它们控制什么？怎么影响输出？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-17/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-17/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-17/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-19": {
+    "title": "请讲一个你做过的最有挑战的（或最有成就感的）AI 项目：你当时是怎么做的、遇到的最大的困难是什么、你是怎么解决的、最后结果如何？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-19/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-19/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-19/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-18": {
+    "title": "讲讲\"让大模型输出结构化数据\"（比如输出 JSON）——为什么重要？一般有哪些方法？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-18/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-18/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-18/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-20": {
+    "title": "AI 产品上线只是开始。作为产品经理，你会怎么持续运营和迭代一个 AI 产品？重点会盯哪些指标？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-20/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-20/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-20/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-19": {
+    "title": "讲讲\"上下文缓存\"（Context Caching）——它是什么？为什么能明显降本、提速？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-19/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-19/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-19/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  }
+}
