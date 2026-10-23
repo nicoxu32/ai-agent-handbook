@@ -116,7 +116,9 @@ python3 build.py
 
 后续项目入口在 `workspace.js` 的 `projects` 中登记；接入正式内容时，需要增加项目数据与对应页面。
 
-旧链接保持兼容：`#guide`、`#path` 指向合并后的 `#home`（路径链接定位到三轮学习区域）；`#extra0` 指向 `#architecture`；`#extra3` 指向 `#glossary`。知识点和 AI 出题路由保留。
+AI 面试直接进入核心题库，不再设置独立总览页；题卡右侧的章节标记可点击返回知识讲解。
+
+旧链接保持兼容：`#interview` 指向 `#bank`；`#guide`、`#path` 指向合并后的 `#home`（路径链接定位到三轮学习区域）；`#extra0` 指向 `#architecture`；`#extra3` 指向 `#glossary`。知识点和 AI 出题路由保留。
 
 接口格式参考：[OpenAI 官方 Chat Completions 文档](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)。具体模型支持的参数以所选服务商文档为准。
 
