@@ -32,10 +32,14 @@ def select(page, selector, start, end):
 def add(page, selector, start, end):
     text = page.locator(selector).text_content()[start:end]
     select(page, selector, start, end)
-    page.locator('.highlight-toolbar button').click()
+    page.locator('.highlight-toolbar [data-selection-action="highlight"]').click()
     expect(page.locator('.highlight-toolbar')).not_to_be_visible()
     assert ''.join(page.locator(selector+' mark').all_text_contents()) == text
     return text
+
+def expect_marks(page, selector, text):
+    expect(page.locator(selector+' mark').first).to_be_visible()
+    assert ''.join(page.locator(selector+' mark').all_text_contents()) == text
 
 def route(page, target):
     page.evaluate('(r)=>location.hash=r', target)
@@ -76,7 +80,7 @@ def run():
         route(page,'k01');expect(page.locator(intro+' mark').first).to_be_visible()
         page.locator('#reading-larger').click()
         assert ''.join(page.locator(intro+' mark').all_text_contents())==quote
-        select(page,intro,50,110);page.locator('.highlight-toolbar button').click()
+        select(page,intro,50,110);page.locator('.highlight-toolbar [data-selection-action="highlight"]').click()
         assert len(entries(page))==1
         assert ''.join(page.locator(intro+' mark').all_text_contents())==original[:110]
         page.locator(intro+' mark').first.click()
@@ -94,7 +98,7 @@ def run():
         expect(page.locator('.highlight-toolbar')).to_be_visible()
         selected=page.evaluate('getSelection().toString()')
         assert selected.strip()
-        page.locator('.highlight-toolbar button').click()
+        page.locator('.highlight-toolbar [data-selection-action="highlight"]').click()
         assert entries(page)[0]['quote']==selected
         reset(page)
         # A multi-paragraph range should remain one removable highlight.
@@ -110,7 +114,7 @@ def run():
           getSelection().removeAllRanges();getSelection().addRange(range);
         }""")
         expect(page.locator('.highlight-toolbar')).to_be_visible()
-        page.locator('.highlight-toolbar button').click()
+        page.locator('.highlight-toolbar [data-selection-action="highlight"]').click()
         assert len(entries(page))==2 and all(item['key'].endswith('/title') for item in entries(page))
         reset(page)
         print('PASS: real mouse drag, multi-paragraph range, cross-question selection excludes collapsed answers.')
@@ -119,19 +123,19 @@ def run():
         title_quote=add(page,title,0,8)
         page.locator('.question').first.locator('summary').click()
         answer_quote=add(page,answer,0,30)
-        route(page,'bank');expect(page.locator(title+' mark')).to_have_text(title_quote)
+        route(page,'bank');expect_marks(page, title, title_quote)
         page.locator('#bank-search').fill('unlikely-query-with-no-match')
         expect(page.locator(title)).to_have_count(0)
         page.locator('#bank-search').fill('')
-        expect(page.locator(title+' mark')).to_have_text(title_quote)
+        expect_marks(page, title, title_quote)
         page.locator('[data-action="practice-question"][data-id="01.1"]').click()
-        expect(page.locator(title+' mark')).to_have_text(title_quote)
+        expect_marks(page, title, title_quote)
         page.locator('[data-action="reveal"]').click()
         assert ''.join(page.locator(answer+' mark').all_text_contents())==answer_quote
         page.locator('[data-action="next-question"]').click()
         expect(page.locator(title)).to_have_count(0)
         page.locator('[data-action="previous-question"]').click()
-        expect(page.locator(title+' mark')).to_have_text(title_quote)
+        expect_marks(page, title, title_quote)
         print('PASS: shared core question title/answer highlights across chapter, filtered bank, practice and question switching.')
 
         route(page,'doubao')
@@ -140,16 +144,16 @@ def run():
         db_quote=add(page,db_title,0,10)
         card=page.locator('.doubao-question').first
         assert not card.evaluate('el=>el.open')
-        page.locator(db_title+' mark').click()
+        page.locator(db_title+' mark').first.click()
         assert not card.evaluate('el=>el.open')
         add(page,db_title,0,10)
         card.locator('summary').click()
         db_answer=block(f'doubao/{question_id}/answer')
         answer_quote=add(page,db_answer,0,35)
         route(page,question_id)
-        expect(page.locator(db_title+' mark')).to_have_text(db_quote)
+        expect_marks(page, db_title, db_quote)
         assert ''.join(page.locator(db_answer+' mark').all_text_contents())==answer_quote
-        page.locator(db_title+' mark').focus();page.keyboard.press('Enter')
+        page.locator(db_title+' mark').first.focus();page.keyboard.press('Enter')
         expect(page.locator(db_title+' mark')).to_have_count(0)
         print('PASS: Doubao list/detail share highlights, removal does not toggle summary, keyboard removal works.')
 
@@ -191,7 +195,7 @@ def run():
         assert box['x']>=0 and box['x']+box['width']<=390
         assert box['y']>650 and box['y']+box['height']<844
         touch.screenshot(path='/tmp/nico-highlights-touch-selection.png')
-        touch.locator('.highlight-toolbar button').tap()
+        touch.locator('.highlight-toolbar [data-selection-action="highlight"]').tap()
         expect(touch.locator(intro+' mark').first).to_be_visible()
         touch.reload();expect(touch.locator(intro+' mark').first).to_be_visible()
         touch.locator(intro+' mark').first.scroll_into_view_if_needed()

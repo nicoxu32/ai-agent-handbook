@@ -11,7 +11,8 @@
   toolbar.hidden = true;
   toolbar.setAttribute('role', 'toolbar');
   toolbar.setAttribute('aria-label', '选中文字操作');
-  toolbar.innerHTML = '<button type="button" title="将选中文字标为重点，保存在当前浏览器"><span aria-hidden="true">▰</span>划重点</button>';
+  toolbar.innerHTML = '<button type="button" data-selection-action="highlight" title="将选中文字标为重点，保存在当前浏览器"><span aria-hidden="true">▰</span>划重点</button><button type="button" data-selection-action="append" hidden>追加内容</button>';
+  const appendButton = toolbar.querySelector('[data-selection-action="append"]');
   document.body.append(toolbar);
 
   function readEntries() {
@@ -173,6 +174,7 @@
         !elementFor(range.endContainer)?.closest(blockSelector)) return hideToolbar();
     pending = selectedParts(range);
     if (!pending.length) return hideToolbar();
+    appendButton.hidden = !appendTargetForSelection(pending);
     toolbar.hidden = false;
     const rect = range.getBoundingClientRect();
     const width = toolbar.offsetWidth;
@@ -216,7 +218,13 @@
   }
 
   toolbar.addEventListener('pointerdown', event => event.preventDefault());
-  toolbar.querySelector('button').addEventListener('click', addHighlights);
+  toolbar.querySelector('[data-selection-action="highlight"]').addEventListener('click', addHighlights);
+  appendButton.addEventListener('click', () => {
+    const target = appendTargetForSelection(pending);
+    window.getSelection().removeAllRanges();
+    hideToolbar();
+    if (target) openAppend(target);
+  });
   document.addEventListener('selectionchange', () => {
     clearTimeout(selectionTimer);
     selectionTimer = setTimeout(updateSelection, 140);

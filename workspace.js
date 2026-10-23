@@ -73,7 +73,7 @@ function catalogView() {
   const sections = DATA.groups.map((group, index) => {
     const chapters = selected.filter(chapter => chapter.group === index);
     if (!chapters.length) return '';
-    return `<section class="catalog-module"><header><span class="module-index">MODULE 0${index + 1}</span><h2>${group}</h2><p>${groupCopy[index]}</p></header><div class="catalog-rows">${chapters.map(chapter => `<article class="catalog-row"><a href="#${chapter.id}"><span class="catalog-number">${chapter.number}</span><div><h3>${escapeHTML(chapter.short)}</h3><p>${escapeHTML(chapter.title.split('：').slice(1).join('：'))}</p></div><span class="badge">${chapter.priority}</span></a></article>`).join('')}</div></section>`;
+    return `<section class="catalog-module"><header><span class="module-index">模块 0${index + 1}</span><h2>${group}</h2><p>${groupCopy[index]}</p></header><div class="catalog-rows">${chapters.map(chapter => `<article class="catalog-row"><a href="#${chapter.id}"><span class="catalog-number">${chapter.number}</span><div><h3>${escapeHTML(chapter.short)}</h3><p>${escapeHTML(chapter.title.split('：').slice(1).join('：'))}</p></div><span class="badge">${chapter.priority}</span></a></article>`).join('')}</div></section>`;
   }).join('');
   main.innerHTML = `${pageHeader('知识目录', '36 个知识点，逐个讲明白。', '六个模块串起模型、知识、执行、集成、平台和产品。每个知识点都关联三道核心面试题，也可以继续让 AI 出新题。')}${sections}${footer()}`;
 }
@@ -81,7 +81,7 @@ function filteredBank() {
   const query = bankQuery.trim().toLowerCase();
   return allQuestions.filter(question => {
     const inScope = bankScope === 'all' || question.chapter.id === bankScope || String(question.chapter.group) === bankScope;
-    return inScope && (!query || `${question.title} ${question.chapter.title} ${plain(question.answer)}`.toLowerCase().includes(query));
+    return inScope && (!query || withChineseTerms(`${question.title} ${question.chapter.title} ${plain(question.answer)}`).toLowerCase().includes(query));
   });
 }
 function renderBankResults() {
@@ -120,7 +120,7 @@ function architectureView() {
 }
 function pendingProjectView() {
   const project = currentProject();
-  main.innerHTML = `<div class="pending-page"><div class="eyebrow">PROJECT NOTEBOOK</div><span class="badge">内容待补充</span><h1 class="page-title">${escapeHTML(project.name)}</h1><p class="hero-copy">这个项目已经有自己的入口。后续知识点、学习路径和面试内容，会在这里逐步整理。</p><div class="pending-sections"><span>01 学习总览</span><span>02 知识目录</span><span>03 AI 面试</span></div><button class="btn" data-route="home">先学习 AI 智能体平台 →</button></div>`;
+  main.innerHTML = `<div class="pending-page"><div class="eyebrow">项目学习手册</div><span class="badge">内容待补充</span><h1 class="page-title">${escapeHTML(project.name)}</h1><p class="hero-copy">这个项目已经有自己的入口。后续知识点、学习路径和面试内容，会在这里逐步整理。</p><div class="pending-sections"><span>01 学习总览</span><span>02 知识目录</span><span>03 AI 面试</span></div><button class="btn" data-route="home">先学习 AI 智能体平台 →</button></div>`;
 }
 function setPagePath(items) {
   document.getElementById('page-path').innerHTML = items.map((item, index) => {
@@ -199,7 +199,7 @@ function searchView(query) {
     {id: 'home', title: '学习指南与路径', content: learningRounds.map(round => round.title + round.description).join(' ')},
     {id: 'architecture', title: '知识点任务架构图', content: DATA.architecture.nodes.map(node => node.title + node.description + node.input + node.output).join(' ')},
     ...DATA.extras.filter(extra => ['extra1','extra2','extra4'].includes(extra.id)).map(extra => ({id: extra.id, title: extra.title, content: plain(extra.html)}))
-  ].filter(item => (item.title + item.content).toLowerCase().includes(normalized));
+  ].filter(item => withChineseTerms(item.title + item.content).toLowerCase().includes(normalized));
   main.innerHTML = `<div class="reader">${pageHeader('项目内搜索', '找到需要的知识。', `“${escapeHTML(query)}” · ${chapters.length} 个知识点，${supplements.length} 篇学习资料，${doubaoMatches.length} 道豆包面试题`)}${chapters.map(chapter => resultCard(chapter, query)).join('')}${supplements.map(item => `<button class="result" data-route="${item.id}"><span class="result-top">学习总览</span><h3>${escapeHTML(item.title)}</h3><p>查看完整内容 →</p></button>`).join('')}${doubaoMatches.map(question => `<button class="result" data-route="${question.id}"><span class="result-top">豆包面试题 · ${DATA.doubao.categories[question.category]}</span><h3>${escapeHTML(question.title)}</h3><p>查看回答框架与口述答案 →</p></button>`).join('')}${!chapters.length && !supplements.length && !doubaoMatches.length ? '<div class="empty"><h3>没有找到匹配内容。</h3><p>试试更短的关键词。</p></div>' : ''}${footer()}</div>`;
 }
 

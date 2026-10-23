@@ -5,7 +5,7 @@ const editDialog = document.createElement('dialog');
 editDialog.className = 'content-editor';
 editDialog.setAttribute('aria-labelledby', 'editor-title');
 editDialog.innerHTML = `
-  <header class="editor-heading"><div><span class="eyebrow">EDIT CONTENT</span><h2 id="editor-title">编辑页面内容</h2></div><button type="button" class="btn small" id="editor-close" aria-label="关闭编辑">关闭</button></header>
+  <header class="editor-heading"><div><span class="eyebrow">正文编辑</span><h2 id="editor-title">编辑页面内容</h2></div><button type="button" class="btn small" id="editor-close" aria-label="关闭编辑">关闭</button></header>
   <div class="editor-body">
   <p class="editor-help">直接修改文字，保存后自动发布到网站，通常需要几分钟。换行可分段，也支持 Markdown 排版。</p>
   <label class="editor-group-label">编辑位置<select id="editor-group" class="select"></select></label>
@@ -13,7 +13,7 @@ editDialog.innerHTML = `
   <details id="editor-auth"><summary>GitHub 编辑授权 <span id="editor-auth-state">· 尚未连接</span></summary>
     <p>仅有此仓库写入权限的人可以发布。创建细粒度令牌，选择 <b>ai-agent-handbook</b> 仓库，并将 <b>Contents</b> 设为 <b>Read and write</b>，其余保持默认。令牌只在当前页面内存中使用，刷新或断开后需重新填写。</p>
     <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">前往 GitHub 创建授权令牌 ↗</a>
-    <label>GitHub 授权令牌<input id="editor-token" type="password" autocomplete="off" spellcheck="false" placeholder="仅在此处填写，不要写入正文"></label>
+    <label><span>GitHub 授权令牌</span><input id="editor-token" type="password" autocomplete="off" spellcheck="false" placeholder="仅在此处填写，不要写入正文"></label>
     <div class="actions"><button type="button" class="btn small" id="editor-connect">连接 GitHub</button><button type="button" class="text-button" id="editor-disconnect" hidden>断开连接</button></div>
   </details>
   <p id="editor-status" role="status" aria-live="polite"></p>
@@ -56,7 +56,9 @@ function renderEditorFields() {
   editorFields.replaceChildren();
   DATA.editorFields.filter(field => field.group === editor.group).forEach(field => {
     const label = document.createElement('label');
-    label.textContent = field.label;
+    const caption = document.createElement('span');
+    caption.textContent = field.label;
+    label.append(caption);
     const input = document.createElement(field.multiline ? 'textarea' : 'input');
     input.dataset.fieldKey = field.key;
     input.value = editableValue(field);
@@ -64,6 +66,7 @@ function renderEditorFields() {
     input.maxLength = field.multiline ? 40000 : 300;
     if (field.multiline) input.rows = Math.min(18, Math.max(4, Math.ceil(input.value.length / 65)));
     label.append(input);
+    updateTermNotes(input);
     editorFields.append(label);
   });
   updateEditorControls();
@@ -166,9 +169,7 @@ async function connectEditor() {
   updateEditorControls();
   editorMessage('正在验证仓库访问权限…');
   try {
-    const repository = await githubRequest('/repos/' + editorRepo, {token});
-    if (repository.full_name !== editorRepo || !repository.permissions?.push) throw new Error('当前账号没有此仓库的编辑权限。');
-    editor.token = token;
+    await authorizeEditorToken(token);
     editorToken.value = '';
     editDialog.querySelector('#editor-auth').open = false;
     editorMessage('已连接 GitHub。修改后点击「保存并发布」。');
@@ -184,6 +185,25 @@ function sameEdits(left, right) {
   const keys = Object.keys(left);
   return keys.length === Object.keys(right).length && keys.every(key => left[key] === right[key]);
 }
+async function authorizeEditorToken(token) {
+  if (!token) throw new Error('请先填写 GitHub 授权令牌。');
+  const repository = await githubRequest('/repos/' + editorRepo, {token});
+  if (repository.full_name !== editorRepo || !repository.permissions?.push) throw new Error('当前账号没有此仓库的编辑权限。');
+  editor.token = token;
+}
+async function writeEditorFile(draft, sha, message) {
+  validateOverrides(draft);
+  if (!editor.token) throw new Error('请先连接 GitHub，以确认你有发布权限。');
+  if (Object.values(draft).some(text => text.includes(editor.token) || /\b(?:github_pat_|gh[pousr]_)[A-Za-z0-9_]{15,}/.test(text))) throw new Error('正文中发现授权凭据，请删除后再发布。');
+  try {
+    return await githubRequest(editorFile, {method: 'PUT', body: {message, content: encodeContent(draft), sha, branch: 'main'}});
+  } catch (error) {
+    // Confirm a lost response before allowing a retry of a possibly successful write.
+    const confirmed = await readEditorFile().catch(() => null);
+    if (!confirmed || !sameEdits(confirmed.value, draft)) throw error;
+    return {content: {sha: confirmed.sha}};
+  }
+}
 async function saveEditor(event) {
   event.preventDefault();
   if (editor.busy || !editor.ready || !editor.dirty) return;
@@ -198,19 +218,9 @@ async function saveEditor(event) {
   editorMessage('正在检查版本并保存…');
   editDialog.querySelector('#editor-published').hidden = true;
   try {
-    validateOverrides(editor.draft);
-    if (Object.values(editor.draft).some(text => text.includes(editor.token) || /\b(?:github_pat_|gh[pousr]_)[A-Za-z0-9_]{15,}/.test(text))) throw new Error('正文中发现授权凭据，请删除后再发布。');
     const latest = await readEditorFile();
     if (latest.sha !== editor.sha) throw new Error('检测到其他设备的修改，尚未发布。请先下载修改备份，再载入最新内容，避免覆盖。');
-    let result;
-    try {
-      result = await githubRequest(editorFile, {method: 'PUT', body: {message: 'Update handbook content from page editor', content: encodeContent(editor.draft), sha: editor.sha, branch: 'main'}});
-    } catch (error) {
-      // A lost response does not mean the commit failed. Read back before offering a retry.
-      const confirmed = await readEditorFile().catch(() => null);
-      if (!confirmed || !sameEdits(confirmed.value, editor.draft)) throw error;
-      result = {content: {sha: confirmed.sha}};
-    }
+    const result = await writeEditorFile(editor.draft, editor.sha, 'Update handbook content from page editor');
     editor.sha = result.content.sha;
     editor.base = structuredClone(editor.draft);
     editor.dirty = false;
@@ -226,6 +236,7 @@ async function saveEditor(event) {
 editorFields.addEventListener('input', event => {
   const field = DATA.editorFields.find(item => item.key === event.target.dataset.fieldKey);
   if (!field) return;
+  updateTermNotes(event.target);
   if (event.target.value === field.value) delete editor.draft[field.key];
   else editor.draft[field.key] = event.target.value;
   editor.dirty = !sameEdits(editor.draft, editor.base);

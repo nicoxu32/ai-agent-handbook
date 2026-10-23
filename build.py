@@ -2,8 +2,10 @@ from pathlib import Path
 import argparse
 import json
 import re
+import hashlib
 import markdown
 from bs4 import BeautifulSoup
+from source_blocks import attach_source_blocks
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'content' / 'handbook.md'
@@ -17,6 +19,7 @@ EDITS = json.loads((ROOT / 'content/edits.json').read_text(encoding='utf-8'))
 if not isinstance(EDITS, dict) or any(not isinstance(key, str) or not isinstance(value, str) for key, value in EDITS.items()):
     raise ValueError('Edits must be a mapping of field names to text')
 FIELDS = []
+APPEND_TARGETS = {}
 
 
 def editable(key, label, value, group, multiline=True):
@@ -28,7 +31,8 @@ def editable(key, label, value, group, multiline=True):
     return result
 
 
-def render(text):
+def render(text, field_key=None):
+    source_text = text
     text = re.sub(r'<a id="k\d+"></a>', '', text)
     diagram = '''<div class="flow" role="img" aria-label="任务流程：用户目标经过权限和状态确认，工作流或智能体调用知识、工具和多模态能力，核验并交付结果；日志、评测和版本记录贯穿各步骤。"><div>用户目标与业务约束</div><span>↓</span><div>身份权限 · 任务状态 · 范围确认</div><span>↓</span><div>工作流 / Agent 选择下一步</div><span>↓</span><div class="flow-branches"><div>知识与检索</div><div>工具与接口</div><div>多模态理解</div></div><span>↓</span><div>模型处理 → 事实与授权检查 → 必要时人工确认</div><span>↓</span><div>核验真实执行状态 → 继续任务或交付结果</div><small>日志 · 评测 · 成本 · 版本记录贯穿全过程</small></div>'''
     text = re.sub(r'```mermaid\n.*?```', lambda _: diagram, text, flags=re.S)
@@ -54,6 +58,8 @@ def render(text):
     for table in soup.find_all('table'):
         wrapper = soup.new_tag('div', attrs={'class': 'table-scroll', 'tabindex': '0', 'aria-label': '可横向滚动的表格'})
         table.wrap(wrapper)
+    if field_key:
+        APPEND_TARGETS[field_key] = attach_source_blocks(source_text, soup, field_key, render)
     return str(soup)
 
 source = SOURCE.read_text(encoding='utf-8')
@@ -80,9 +86,9 @@ for match in re.finditer(r'^### (\d{2})｜(.+?)〔(P[012])〕\n(.*?)(?=^### \d{2
         qid, question_title, answer = question.groups()
         question_title = editable(f'question/{qid}/title', f'面试题 {qid}', question_title, 'k' + number, False)
         answer = editable(f'question/{qid}/answer', f'{qid} 口述答案', answer.strip(), 'k' + number)
-        questions.append({'id': qid, 'title': question_title, 'answer': render(answer.strip())})
+        questions.append({'id': qid, 'title': question_title, 'answer': render(answer, f'question/{qid}/answer')})
     group = next(i for i, bound in enumerate(BOUNDS) if int(number) <= bound)
-    chapters.append({'id': 'k' + number, 'number': number, 'title': title, 'short': title.split('：')[0], 'priority': priority, 'group': group, **{key: render(value) for key, value in sections.items()}, 'questions': questions, 'search': title + '\n' + '\n'.join(sections.values()) + '\n' + '\n'.join(q['title'] + ' ' + BeautifulSoup(q['answer'], 'html.parser').get_text() for q in questions)})
+    chapters.append({'id': 'k' + number, 'number': number, 'title': title, 'short': title.split('：')[0], 'priority': priority, 'group': group, **{key: render(value, f'chapter/k{number}/{key}') for key, value in sections.items()}, 'questions': questions, 'search': title + '\n' + '\n'.join(sections.values()) + '\n' + '\n'.join(q['title'] + ' ' + BeautifulSoup(q['answer'], 'html.parser').get_text() for q in questions)})
 appendix = source.split('## 七、', 1)[1]
 extras = []
 # Preserve published appendix links after removing the standalone glossary.
@@ -157,12 +163,17 @@ for extra in extras:
     if extra['id'] in {'extra1', 'extra2', 'extra4'}:
         export.append(extra['markdown'])
 source = '\n\n'.join(export) + '\n'
-payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao}, ensure_ascii=False).replace('<', '\\u003c')
+source_bytes = SOURCE.read_bytes()
+source_sha = hashlib.sha1(f'blob {len(source_bytes)}\0'.encode() + source_bytes).hexdigest()
+terms = json.loads((ROOT / 'content/terms.json').read_text(encoding='utf-8'))
+payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao, 'appendTargets': APPEND_TARGETS, 'handbookSourceSha': source_sha, 'terms': terms}, ensure_ascii=False).replace('<', '\\u003c')
 template = (ROOT / 'template.html').read_text(encoding='utf-8')
 template = template.replace('__WORKSPACE_STYLE__', (ROOT / 'workspace.css').read_text(encoding='utf-8'))
 template = template.replace('__WORKSPACE_SCRIPT__', (ROOT / 'workspace.js').read_text(encoding='utf-8'))
 template = template.replace('__EDITOR_SCRIPT__', (ROOT / 'editor.js').read_text(encoding='utf-8'))
 template = template.replace('__HIGHLIGHTS_SCRIPT__', (ROOT / 'highlights.js').read_text(encoding='utf-8'))
+template = template.replace('__APPEND_SCRIPT__', (ROOT / 'append.js').read_text(encoding='utf-8'))
+template = template.replace('__TERMS_SCRIPT__', (ROOT / 'terms.js').read_text(encoding='utf-8'))
 template = template.replace('__DOUBAO_SCRIPT__', (ROOT / 'doubao.js').read_text(encoding='utf-8'))
 template = template.replace('__STATIC_SITE__', json.dumps(args.static))
 args.output.parent.mkdir(parents=True, exist_ok=True)
