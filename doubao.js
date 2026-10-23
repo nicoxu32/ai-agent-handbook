@@ -10,11 +10,11 @@ function filteredDoubaoQuestions() {
 function doubaoQuestionCard(question, expanded = false) {
   const number = question.id.split('-').at(-1);
   return `<details class="doubao-question" data-question-id="${question.id}" ${expanded ? 'open' : ''}>
-    <summary><span class="doubao-meta">${DATA.doubao.categories[question.category]} · ${number}</span><span class="doubao-title">${escapeHTML(question.title)}</span><span class="doubao-toggle" aria-hidden="true">+</span></summary>
+    <summary><span class="doubao-meta">${DATA.doubao.categories[question.category]} · ${number}</span><span class="doubao-title" data-highlight-key="doubao/${question.id}/title">${escapeHTML(question.title)}</span><span class="doubao-toggle" aria-hidden="true">+</span></summary>
     <div class="doubao-answer">
-      ${question.framework ? `<section><h3>回答框架</h3><div class="prose">${question.framework}</div></section>` : ''}
-      <section><h3>口述参考答案</h3><div class="prose">${question.answer}</div></section>
-      ${question.supplement ? `<details class="doubao-supplement"><summary>原文补充 · 金句与案例</summary><div class="prose">${question.supplement}</div></details>` : ''}
+      ${question.framework ? `<section><h3>回答框架</h3><div class="prose" data-highlight-key="doubao/${question.id}/framework">${question.framework}</div></section>` : ''}
+      <section><h3>口述参考答案</h3><div class="prose" data-highlight-key="doubao/${question.id}/answer">${question.answer}</div></section>
+      ${question.supplement ? `<details class="doubao-supplement"><summary>原文补充 · 金句与案例</summary><div class="prose" data-highlight-key="doubao/${question.id}/supplement">${question.supplement}</div></details>` : ''}
       ${expanded ? '' : `<a class="text-button" href="#${question.id}">单独打开此题 ↗</a>`}
     </div>
   </details>`;

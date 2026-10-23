@@ -71,6 +71,7 @@ python3 server.py --bind 0.0.0.0 --port 8768
 - **AI 出题**：选择场景设计、问题排查或方案取舍，生成后先答题，再展开参考答案和追问。每个知识点在当前浏览器保留最近 10 道生成题。
 - **全文搜索**：在当前 AI 项目内检索讲解、问题、答案和学习资料；按 `/` 聚焦搜索框，按 `Esc` 清空搜索。
 - **字号调整**：顶部 A−／正常／A+ 调整正文字号，每次 10%，范围 90%～150%；正常恢复 100%。选择保存在当前浏览器，刷新和切换页面后仍生效。
+- **划词荧光笔**：选中知识点正文、面试题或答案的文字后，点击「划重点」标黄；手机长按选词后，按钮出现在屏幕下方。点击标记可取消，也可用 Tab 聚焦标记后按 Enter 或空格取消。同一道核心题在章节、题库和练习页共享标记，豆包题在列表与单题页共享标记。标记仅保存在当前浏览器，刷新后保留，不随内容发布，也不跨设备同步；清除浏览器数据会删除标记。原文更新后会尝试按文字和上下文恢复，无法准确定位的标记暂不显示。浏览器拒绝保存时会提示。
 - **路径导航**：顶部合并为项目／栏目／模块／当前页面一条路径，正文不重复展示面包屑。
 - **编辑内容**：每篇内容的正文右上角点击「编辑内容」，在当前页面的窗口修改并保存发布。
 - **下载原文**：页面底部可下载完整 Markdown。
@@ -111,7 +112,7 @@ python3 -m pip install -r requirements.txt
 python3 build.py
 ```
 
-`template.html` 管理阅读和 AI 出题；`workspace.js`、`workspace.css` 管理导航及页面展示；`editor.js` 管理编辑、授权、版本检查和 GitHub 保存。`build.py` 校验内容、过滤正文中的可执行 HTML，并把数据及脚本嵌入 `index.html`。生成文件仍可离线阅读，在线编辑需要网络。直接改 `index.html` 会在下次构建时被覆盖。
+`template.html` 管理阅读和 AI 出题；`workspace.js`、`workspace.css` 管理导航及页面展示；`editor.js` 管理编辑、授权、版本检查和 GitHub 保存；`highlights.js` 管理选词标记、原文定位和本地保存。`build.py` 校验内容、过滤正文中的可执行 HTML，并把数据及脚本嵌入 `index.html`。生成文件仍可离线阅读，在线编辑需要网络。直接改 `index.html` 会在下次构建时被覆盖。
 
 `doubao.js` 管理豆包题库的分类、搜索和阅读。豆包内容按原文保留，通过增量同步持续收录；原文中的项目经历是答案示例，练习时需要结合自己的真实经历。
 
@@ -164,6 +165,16 @@ git push
 python3 -m unittest discover -s tests -v
 node --check workspace.js
 node --check editor.js
+node --check highlights.js
 ```
 
 构建测试覆盖编辑内容在阅读、搜索、问答和 Markdown 下载中的一致性，以及可执行 HTML 过滤和无效字段拒绝。浏览器验证覆盖保存授权、并发冲突、网络失败、草稿保留、手机布局和原有题库导航。
+
+荧光笔的浏览器回归验证需先安装开发工具 Playwright（`python3 -m pip install playwright`；没有 Chrome 时再执行 `python3 -m playwright install chromium`），然后运行：
+
+```sh
+python3 build.py --static --output _site/index.html
+python3 tests/check_highlights.py
+```
+
+覆盖真实鼠标选词、跨段落标记、刷新恢复、题库筛选、跨页面共享、取消、原文变更定位、存储失败和触屏模拟。手机系统原生的长按菜单仍需在实际设备上体验。
