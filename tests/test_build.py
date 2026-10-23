@@ -32,6 +32,8 @@ class EditableBuildTests(unittest.TestCase):
         edits = {
             'chapter/k01/title': '模型学习：编辑后的标题',
             'chapter/k01/intro': '新的讲解关键词。\n\n第二段内容。',
+            'chapter/k01/scenarios': '应用案例：售后工单分流。',
+            'chapter/k01/troubleshooting': '故障排查：核对状态回执。',
             'question/01.1/title': '编辑后的面试题怎么回答？',
             'question/01.1/answer': '先说判断，再解释原因。',
             'guide': '更新后的学习指南。',
@@ -48,6 +50,19 @@ class EditableBuildTests(unittest.TestCase):
         self.assertIn('新的讲解关键词', chapter['intro'])
         self.assertIn('编辑后的面试题', chapter['search'])
         self.assertIn('先说判断', chapter['questions'][0]['answer'])
+        for key in ['scenarios', 'troubleshooting']:
+            value = edits[f'chapter/k01/{key}']
+            self.assertIn(value, chapter[key])
+            self.assertIn(value, chapter['search'])
+        self.assertNotIn('应用案例：售后工单分流', chapter['decision'])
+        self.assertNotIn('故障排查：核对状态回执', chapter['scenarios'])
+        question_ids = []
+        for item in data['chapters']:
+            for key in ['intro', 'decision', 'scenarios', 'troubleshooting']:
+                self.assertTrue(item[key].strip())
+            self.assertEqual([q['id'] for q in item['questions']], [f"{item['number']}.{i}" for i in range(1, 4)])
+            question_ids.extend(q['id'] for q in item['questions'])
+        self.assertEqual(len(set(question_ids)), 108)
         for value in edits.values():
             self.assertIn(value, data['source'])
 

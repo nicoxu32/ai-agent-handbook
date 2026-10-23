@@ -58,13 +58,23 @@ def render(text):
 
 source = SOURCE.read_text(encoding='utf-8')
 chapters = []
+section_labels = [
+    ('intro', '先这样理解'),
+    ('decision', '放到产品里怎么判断'),
+    ('scenarios', '项目中的应用场景'),
+    ('troubleshooting', '应用中经常遇到的问题'),
+]
 for match in re.finditer(r'^### (\d{2})｜(.+?)〔(P[012])〕\n(.*?)(?=^### \d{2}｜|^## |\Z)', source, re.M | re.S):
     number, title, priority, body = match.groups()
     title = editable(f'chapter/k{number}/title', '知识点标题', title, 'k' + number, False)
-    intro = body.split('**先这样理解**', 1)[1].split('**放到产品里怎么判断**', 1)[0]
-    decision = body.split('**放到产品里怎么判断**', 1)[1].split('**面试题 ', 1)[0]
-    intro = editable(f'chapter/k{number}/intro', '先这样理解', intro.strip(), 'k' + number)
-    decision = editable(f'chapter/k{number}/decision', '放到产品里怎么判断', decision.strip(), 'k' + number)
+    sections = {}
+    for index, (key, label) in enumerate(section_labels):
+        next_marker = f'**{section_labels[index + 1][1]}**' if index + 1 < len(section_labels) else '**面试题 '
+        marker = f'**{label}**'
+        if body.count(marker) != 1 or next_marker not in body.split(marker, 1)[1]:
+            raise ValueError(f'Chapter {number} must contain an ordered {label} section')
+        raw = body.split(marker, 1)[1].split(next_marker, 1)[0].strip()
+        sections[key] = editable(f'chapter/k{number}/{key}', label, raw, 'k' + number)
     questions = []
     for question in re.finditer(r'\*\*面试题 (\d{2}\.[123])｜(.+?)\*\*\s*\*\*口述答案：\*\*(.*?)(?=\*\*面试题 |<a id=|\Z)', body, re.S):
         qid, question_title, answer = question.groups()
@@ -72,7 +82,7 @@ for match in re.finditer(r'^### (\d{2})｜(.+?)〔(P[012])〕\n(.*?)(?=^### \d{2
         answer = editable(f'question/{qid}/answer', f'{qid} 口述答案', answer.strip(), 'k' + number)
         questions.append({'id': qid, 'title': question_title, 'answer': render(answer.strip())})
     group = next(i for i, bound in enumerate(BOUNDS) if int(number) <= bound)
-    chapters.append({'id': 'k' + number, 'number': number, 'title': title, 'short': title.split('：')[0], 'priority': priority, 'group': group, 'intro': render(intro), 'decision': render(decision), 'questions': questions, 'search': title + '\n' + intro + '\n' + decision + '\n' + '\n'.join(q['title'] + ' ' + BeautifulSoup(q['answer'], 'html.parser').get_text() for q in questions)})
+    chapters.append({'id': 'k' + number, 'number': number, 'title': title, 'short': title.split('：')[0], 'priority': priority, 'group': group, **{key: render(value) for key, value in sections.items()}, 'questions': questions, 'search': title + '\n' + '\n'.join(sections.values()) + '\n' + '\n'.join(q['title'] + ' ' + BeautifulSoup(q['answer'], 'html.parser').get_text() for q in questions)})
 intro = source.split('## 先说这份手册怎么用', 1)[1].split('## 一、模型基础', 1)[0]
 appendix = source.split('## 七、', 1)[1]
 metadata = source.split('\n', 1)[1].split('## 先说这份手册怎么用', 1)[0]
@@ -146,6 +156,7 @@ for group_index, group in enumerate(GROUPS):
     for chapter in (item for item in chapters if item['group'] == group_index):
         key = 'chapter/' + chapter['id']
         export.extend([f"<a id=\"{chapter['id']}\"></a>", f"### {chapter['number']}｜{chapter['title']}〔{chapter['priority']}〕", '**先这样理解**', values[key + '/intro'], '**放到产品里怎么判断**', values[key + '/decision']])
+        export.extend(['**项目中的应用场景**', values[key + '/scenarios'], '**应用中经常遇到的问题**', values[key + '/troubleshooting']])
         for question in chapter['questions']:
             export.extend([f"**面试题 {question['id']}｜{question['title']}**", '**口述答案：**', values['question/' + question['id'] + '/answer']])
 export.append('## 常用术语与场景')

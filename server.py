@@ -127,6 +127,8 @@ def generate_question(body):
         'knowledgePoint': chapter['title'],
         'explanation': plain_text(chapter['intro']),
         'productDecisions': plain_text(chapter['decision']),
+        'applicationScenarios': plain_text(chapter['scenarios']),
+        'commonProblems': plain_text(chapter['troubleshooting']),
         'existingQuestionsAndAnswers': [{'question': q['title'], 'answer': plain_text(q['answer'])} for q in chapter['questions']],
         'avoidQuestions': previous,
         'questionType': QUESTION_TYPES[question_type],
