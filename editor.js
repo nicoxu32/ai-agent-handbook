@@ -7,7 +7,7 @@ editDialog.setAttribute('aria-labelledby', 'editor-title');
 editDialog.innerHTML = `
   <header class="editor-heading"><div><span class="eyebrow">正文编辑</span><h2 id="editor-title">编辑页面内容</h2></div><button type="button" class="btn small" id="editor-close" aria-label="关闭编辑">关闭</button></header>
   <div class="editor-body">
-  <p class="editor-help">直接修改文字，保存后自动发布到网站，通常需要几分钟。换行可分段，也支持 Markdown 排版。</p>
+  <p class="editor-help">直接修改文字，回车换行，空行分段，也支持 Markdown 排版。保存后自动发布，通常需要几分钟；发布完成后刷新网页查看。</p>
   <label class="editor-group-label">编辑位置<select id="editor-group" class="select"></select></label>
   <form id="editor-form"><div id="editor-fields"></div></form>
   <details id="editor-auth"><summary>GitHub 编辑授权 <span id="editor-auth-state">· 尚未连接</span></summary>

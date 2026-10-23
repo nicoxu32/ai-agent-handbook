@@ -6,13 +6,14 @@ from source_blocks import attach_source_blocks
 
 
 def render(source):
-    return markdown.markdown(source, extensions=['tables', 'fenced_code'])
+    return markdown.markdown(source, extensions=['tables', 'fenced_code', 'nl2br'])
 
 
 class SourceBlockTests(unittest.TestCase):
     def test_complete_blocks_and_utf16_offsets(self):
         samples = [
             '第一段 **重点** 😀。\n\n第二段。',
+            '**标题**\n第一行。\n第二行。\n\n下一段。',
             '- 第一项\n\n- 第二项\n\n结尾。',
             '| 列一 | 列二 |\n| --- | --- |\n| 内容 | 示例 |\n\n结尾。',
             '```json\n{"value": 1}\n\n{"value": 2}\n```\n\n结尾。',

@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -77,6 +78,38 @@ class EditableBuildTests(unittest.TestCase):
         for value in ['<script', 'onclick', 'javascript:', '<img', '<iframe']:
             self.assertNotIn(value, intro)
         self.assertIn('<strong>重点</strong>', intro)
+
+    def test_editor_line_breaks_preserve_markdown_structure_and_append_positions(self):
+        prose = '**训练和使用模型是两件事。**\n预训练：建立能力。\n后训练：针对性优化。\n推理：处理请求。'
+        blocks = [prose, '下一段 😀。\n仍在本段。', '- 第一项\n- 第二项',
+                  '| 名称 | 说明 |\n| --- | --- |\n| 推理 | 处理请求 |',
+                  '```text\n第一行\n第二行\n```']
+        source = '\n\n'.join(blocks)
+        edits = {f'chapter/k01/{key}': source for key in ['intro', 'decision', 'scenarios', 'troubleshooting']}
+        edits['question/01.1/answer'] = '先说结论。\n再讲原因。\n\n最后补充边界。'
+        result, data = self.build(edits)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for key in ['intro', 'decision', 'scenarios', 'troubleshooting']:
+            with self.subTest(section=key):
+                soup = BeautifulSoup(data['chapters'][0][key], 'html.parser')
+                paragraphs = soup.find_all('p')
+                self.assertEqual(len(paragraphs), 2)
+                self.assertEqual(len(paragraphs[0].find_all('br')), 3)
+                self.assertEqual(len(paragraphs[1].find_all('br')), 1)
+                self.assertEqual(paragraphs[0].strong.get_text(), '训练和使用模型是两件事。')
+                self.assertEqual([li.get_text() for li in soup.select('ul li')], ['第一项', '第二项'])
+                self.assertEqual(len(soup.select('table tbody tr')), 1)
+                self.assertFalse(soup.select('table br, pre br'))
+                self.assertEqual(soup.pre.code.get_text(), '第一行\n第二行\n')
+                records = data['appendTargets'][f'chapter/k01/{key}']
+                self.assertEqual(len(records), len(blocks))
+                self.assertEqual(records[0]['end'], len(prose.encode('utf-16-le')) // 2)
+                self.assertEqual(records[0]['text'], paragraphs[0].get_text())
+        answer = BeautifulSoup(data['chapters'][0]['questions'][0]['answer'], 'html.parser')
+        self.assertEqual(len(answer.find_all('p')), 2)
+        self.assertEqual(len(answer.find_all('br')), 1)
+        self.assertEqual(data['edits'], edits)
+        self.assertIn(source, data['source'])
 
     def test_rejects_unknown_or_empty_fields(self):
         for edits in [{'nonexistent': 'text'}, {'round/0/description': ''}, {'chapter/k01/title': 'a\nb'}]:

@@ -36,7 +36,7 @@ def render(text, field_key=None):
     text = re.sub(r'<a id="k\d+"></a>', '', text)
     diagram = '''<div class="flow" role="img" aria-label="任务流程：用户目标经过权限和状态确认，工作流或智能体调用知识、工具和多模态能力，核验并交付结果；日志、评测和版本记录贯穿各步骤。"><div>用户目标与业务约束</div><span>↓</span><div>身份权限 · 任务状态 · 范围确认</div><span>↓</span><div>工作流 / Agent 选择下一步</div><span>↓</span><div class="flow-branches"><div>知识与检索</div><div>工具与接口</div><div>多模态理解</div></div><span>↓</span><div>模型处理 → 事实与授权检查 → 必要时人工确认</div><span>↓</span><div>核验真实执行状态 → 继续任务或交付结果</div><small>日志 · 评测 · 成本 · 版本记录贯穿全过程</small></div>'''
     text = re.sub(r'```mermaid\n.*?```', lambda _: diagram, text, flags=re.S)
-    html = markdown.markdown(text, extensions=['tables', 'fenced_code'])
+    html = markdown.markdown(text, extensions=['tables', 'fenced_code', 'nl2br'])
     soup = BeautifulSoup(html, 'html.parser')
     allowed = {'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'strong', 'em', 'b', 'i', 'del', 'blockquote', 'pre', 'code', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'a', 'hr', 'br', 'div', 'span', 'small'}
     for tag in list(soup.find_all(True)):
