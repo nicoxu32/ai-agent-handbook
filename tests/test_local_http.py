@@ -24,7 +24,7 @@ class LocalHTTPTests(unittest.TestCase):
                 {'X-Handbook-Token': server.SESSION_TOKEN, 'Sec-Fetch-Site': 'cross-site'},
             ]:
                 with self.subTest(headers=list(headers)):
-                    for endpoint in ['save', 'open-document', 'publish']:
+                    for endpoint in ['save', 'open-document', 'publish', 'followup']:
                         request = Request(address+'/api/local/'+endpoint, data=b'{}', headers={'Content-Type':'application/json', **headers})
                         with self.assertRaises(HTTPError) as caught:
                             urlopen(request)
@@ -43,6 +43,17 @@ class LocalHTTPTests(unittest.TestCase):
                 request = Request(address+'/api/local/open-document', data=json.dumps({'group':'k02'}).encode(), headers={'Content-Type':'application/json','X-Handbook-Token':server.SESSION_TOKEN,'Origin':address})
                 self.assertTrue(json.load(urlopen(request))['opened'])
                 opened.assert_called_once_with(server.ROOT, 'k02')
+            with patch('server.generate_followup', side_effect=server.RequestError(504, '模型响应超时')):
+                request = Request(address+'/api/local/followup', data=b'{}', headers={'Content-Type':'application/json','X-Handbook-Token':server.SESSION_TOKEN,'Origin':address})
+                with self.assertRaises(HTTPError) as caught:
+                    urlopen(request)
+                self.assertEqual(caught.exception.code, 504)
+                caught.exception.close()
+                self.assertTrue(server.GENERATION_SLOT.acquire(blocking=False))
+                self.assertTrue(server.GENERATION_SLOT.acquire(blocking=False))
+                server.GENERATION_SLOT.release()
+                server.GENERATION_SLOT.release()
+
         finally:
             http.shutdown()
             http.server_close()

@@ -78,9 +78,72 @@ def run():
                 expect(page.locator(block(key))).to_contain_text('离线保存测试')
                 print('PASS: external network blocked; draft survives reload; save writes disk and immediately updates reading without Git commit.')
 
+                requests = []
+                held_requests = []
+                def followup(route):
+                    body = route.request.post_data_json
+                    requests.append(body)
+                    if body['question'] == '取消测试':
+                        held_requests.append(route)
+                        return
+                    if body['question'] == '失败测试':
+                        route.fulfill(status=502,json={'error':'模型服务暂时不可用'})
+                    elif body['mode'] == 'compose':
+                        route.fulfill(json={'answer':'本地追加 😀 <script>不会执行</script>。'})
+                    else:
+                        route.fulfill(json={'answer':'结合当前原文，可以用企业制度更新来区分训练与推理。'})
+                page.route('**/api/local/followup',followup)
+                before_followup = (root/'content/documents/k01.md').read_bytes()
                 select(page, block(key), 6, 22)
                 page.locator('[data-selection-action="append"]').click()
-                page.locator('#append-input').fill('本地追加 😀 <script>不会执行</script>。')
+                expect(page.locator('#append-input')).to_be_hidden()
+                expect(page.locator('#append-save')).to_be_disabled()
+                page.locator('#append-question').fill('举个例子')
+                page.locator('#append-ask').click()
+                expect(page.locator('#append-conversation .assistant')).to_have_count(1)
+                assert requests[-1]['history'] == []
+                assert requests[-1]['field'] == key
+                page.locator('#append-question').fill('再讲讲具体步骤')
+                page.locator('#append-close').click()
+                page.reload()
+                select(page, block(key), 6, 22)
+                page.locator('[data-selection-action="append"]').click()
+                expect(page.locator('#append-question')).to_have_value('再讲讲具体步骤')
+                expect(page.locator('#append-conversation .assistant')).to_have_count(1)
+                page.locator('#append-ask').click()
+                expect(page.locator('#append-conversation .assistant')).to_have_count(2)
+                assert len(requests[-1]['history']) == 2
+                page.locator('#append-question').fill('失败测试')
+                page.locator('#append-ask').click()
+                expect(page.locator('#append-status')).to_contain_text('模型服务暂时不可用')
+                expect(page.locator('#append-question')).to_have_value('失败测试')
+                expect(page.locator('#append-conversation .assistant')).to_have_count(2)
+                page.locator('#append-question').fill('取消测试')
+                page.locator('#append-ask').click()
+                expect(page.locator('#append-cancel')).to_be_visible()
+                page.locator('#append-cancel').click()
+                expect(page.locator('#append-status')).to_contain_text('已停止等待')
+                expect(page.locator('#append-question')).to_have_value('取消测试')
+                expect(page.locator('#append-conversation .assistant')).to_have_count(2)
+                for request in held_requests:
+                    request.abort()
+                page.locator('#append-question').fill('')
+                page.locator('#append-compose').click()
+                expect(page.locator('#append-input')).to_have_value('本地追加 😀 <script>不会执行</script>。')
+                assert requests[-1]['mode'] == 'compose'
+                assert len(requests[-1]['history']) == 4
+                assert (root/'content/documents/k01.md').read_bytes() == before_followup
+                page.locator('#append-input').fill('本地追加 😀 <script>不会执行</script>。\n人工确认的补充。')
+                for width in [1366,390,320]:
+                    page.set_viewport_size({'width':width,'height':900})
+                    header=page.locator('.append-editor .editor-heading').bounding_box()
+                    footer=page.locator('.append-editor .editor-footer').bounding_box()
+                    page.locator('.append-editor .editor-body').evaluate('el=>el.scrollTop=el.scrollHeight')
+                    assert page.locator('.append-editor .editor-heading').bounding_box()==header
+                    assert page.locator('.append-editor .editor-footer').bounding_box()==footer
+                    assert footer['x']>=0 and footer['x']+footer['width']<=width
+                    page.screenshot(path=f'/tmp/followup-{width}.png')
+                print('PASS: multi-turn context, restored conversation, failed requests retain drafts, editable composition; no file changes before confirmation.')
                 with page.expect_navigation():
                     page.locator('#append-save').click()
                 expect(page.locator(block(key))).to_contain_text('本地追加 😀 <script>不会执行</script>。')

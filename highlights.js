@@ -11,7 +11,7 @@
   toolbar.hidden = true;
   toolbar.setAttribute('role', 'toolbar');
   toolbar.setAttribute('aria-label', '选中文字操作');
-  toolbar.innerHTML = '<button type="button" data-selection-action="highlight" title="将选中文字标为重点，保存在当前浏览器"><span aria-hidden="true">▰</span>划重点</button><button type="button" data-selection-action="append" hidden>追加内容</button>';
+  toolbar.innerHTML = '<button type="button" data-selection-action="highlight" title="将选中文字标为重点，保存在当前浏览器"><span aria-hidden="true">▰</span>划重点</button><button type="button" data-selection-action="append" hidden>追问</button>';
   const appendButton = toolbar.querySelector('[data-selection-action="append"]');
   document.body.append(toolbar);
 

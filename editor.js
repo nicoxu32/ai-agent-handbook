@@ -46,7 +46,7 @@ function editorMessage(message, error = false) {
   status.textContent = message;
   status.classList.toggle('error', error);
 }
-async function localRequest(path, body) {
+async function localRequest(path, body, signal) {
   if (!localEditing) throw new Error('请在电脑上打开本地学习手册，再编辑 Markdown 文件。线上网站用于查看已发布内容。');
   if (!editor.token) {
     const response = await fetch('/api/local/status', {cache: 'no-store'});
@@ -55,7 +55,9 @@ async function localRequest(path, body) {
     editor.token = status.token;
     showPublishStatus(status);
   }
-  const response = await fetch('/api/local/' + path, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Handbook-Token': editor.token}, body: JSON.stringify(body), signal: AbortSignal.timeout(path === 'publish' ? 180000 : 30000)});
+  const timeout = {publish: 180000, followup: 90000}[path] || 30000;
+  const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(timeout)]) : AbortSignal.timeout(timeout);
+  const response = await fetch('/api/local/' + path, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Handbook-Token': editor.token}, body: JSON.stringify(body), signal: requestSignal});
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || '本地操作失败，请保留草稿后重试。');
   return result;
