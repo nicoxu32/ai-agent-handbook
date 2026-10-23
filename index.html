@@ -709,7 +709,6 @@ function doubaoView(selectedId) {
   const selected = DATA.doubao.questions.find(question => question.id === selectedId);
   const counts = Object.fromEntries(Object.keys(DATA.doubao.categories).map(category => [category, DATA.doubao.questions.filter(question => question.category === category).length]));
   main.innerHTML = `${pageHeader('AI 面试', '豆包面试题', '从产品判断到技术原理，分两条线练习表达。题干、回答框架与口述答案按分享内容保留。')}
-    <p class="doubao-source">来源：<a href="${DATA.doubao.sourceUrl}" target="_blank" rel="noopener noreferrer">豆包分享 ↗</a> · 整理于 ${DATA.doubao.importedOn}。原文中的项目经历为答案示例，练习时请结合自己的真实经历。</p>
     ${selected ? `<p><a class="text-button" href="#doubao">← 返回全部豆包面试题</a></p>${doubaoQuestionCard(selected, true)}` : `<div class="doubao-controls"><div class="doubao-categories" role="group" aria-label="面试题分类"><button class="btn small" data-doubao-category="all">全部 ${DATA.doubao.questions.length}</button>${Object.entries(DATA.doubao.categories).map(([id, label]) => `<button class="btn small" data-doubao-category="${id}">${label} ${counts[id]}</button>`).join('')}</div><label class="doubao-search">搜索题目与答案<input id="doubao-search" type="search" placeholder="例如：RAG、长记忆、商业化" value="${escapeHTML(doubaoQuery)}"></label></div><p id="doubao-count" class="content-count" aria-live="polite"></p><div id="doubao-results"></div>`}
     ${footer()}`;
   if (!selected) renderDoubaoResults();
