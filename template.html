@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f6f5f0">
 <meta name="description" content="为 AI 产品经理准备的口述学习手册。36 个知识点、108 道面试问答，从理解原理到形成自己的判断。">
-<title>AI 智能体 · 学习手册</title>
+<title>AI 知识点手册</title>
 <style>
 :root{--paper:#f6f5f0;--white:#fffefa;--ink:#242d2a;--muted:#6d746d;--line:#dedfd5;--green:#284f40;--soft:#e8eee5;--gold:#a36a29;--sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;--serif:"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;--sidebar:270px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:calc(14px * var(--reading-scale, 1))/1.65 var(--sans)}button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer;color:inherit}button:disabled{cursor:default;opacity:.4}a{color:var(--green)}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--green);outline-offset:4px}button{border:0;background:none}a{text-decoration:none}p,h1,h2,h3{margin-top:0}svg{width:19px;height:19px;vertical-align:middle;flex-shrink:0}button svg{pointer-events:none}.skip{position:fixed;left:16px;top:-100px;background:var(--green);color:white;padding:12px;z-index:100}.skip:focus{top:10px}[hidden]{display:none!important}
@@ -27,12 +27,12 @@ __WORKSPACE_STYLE__
 <body>
 <a class="skip" href="#main" data-jump="main">跳转到正文</a>
 <aside class="sidebar" id="sidebar" aria-label="学习目录">
-<div class="sidebar-top"><a class="brand" href="#home"><span class="brand-mark">A</span><span><strong>Nico 的学习手册</strong><small>PRODUCT FIELD NOTES</small></span></a><button class="close-menu" id="close-menu" aria-label="关闭目录">✕</button></div>
+<div class="sidebar-top"><a class="brand" href="#home"><span class="brand-mark">A</span><span><strong>AI 知识点手册</strong><small>AI KNOWLEDGE HANDBOOK</small></span></a><button class="close-menu" id="close-menu" aria-label="关闭目录">✕</button></div>
 <label class="project-picker">当前项目<select id="project-select" class="select" aria-label="切换项目"><option value="agent">AI 智能体平台</option><option value="hardware">智能硬件设备 · 待补充</option></select></label>
 <div class="sidebar-scroll" id="sidebar-nav"></div>
 </aside>
 <div class="overlay" id="overlay" hidden></div>
-<div class="workspace"><header class="topbar"><button class="menu-button" id="menu-button" aria-label="打开学习目录" aria-controls="sidebar" aria-expanded="false">☰</button><nav class="page-path" id="page-path" aria-label="当前位置"><strong id="page-name">学习总览</strong></nav><div class="topbar-tools"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="搜索知识点、面试题…" aria-label="搜索全文" autocomplete="off"><kbd aria-hidden="true">/</kbd></label><div class="reading-size" role="group" aria-label="正文字号"><button type="button" id="reading-smaller" aria-label="缩小文字" title="缩小文字">A−</button><button type="button" id="reading-reset" aria-label="恢复正常字号" title="恢复正常字号">正常</button><button type="button" id="reading-larger" aria-label="放大文字" title="放大文字">A+</button></div></div><span class="avatar" aria-label="Nico 的学习手册">N</span></header><main id="main" tabindex="-1"></main></div>
+<div class="workspace"><header class="topbar"><button class="menu-button" id="menu-button" aria-label="打开学习目录" aria-controls="sidebar" aria-expanded="false">☰</button><nav class="page-path" id="page-path" aria-label="当前位置"><strong id="page-name">学习总览</strong></nav><div class="topbar-tools"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="搜索知识点、面试题…" aria-label="搜索全文" autocomplete="off"><kbd aria-hidden="true">/</kbd></label><div class="reading-size" role="group" aria-label="正文字号"><button type="button" id="reading-smaller" aria-label="缩小文字" title="缩小文字">A−</button><button type="button" id="reading-reset" aria-label="恢复正常字号" title="恢复正常字号">正常</button><button type="button" id="reading-larger" aria-label="放大文字" title="放大文字">A+</button></div></div><span class="avatar" aria-label="AI 知识点手册">N</span></header><main id="main" tabindex="-1"></main></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <noscript><p style="padding:30px">请开启 JavaScript 查看完整学习手册，或直接阅读同目录上级的 Markdown 原文。</p></noscript>
 <script id="handbook-data" type="application/json">__HANDBOOK_DATA__</script>

@@ -160,7 +160,7 @@ function updatePageHeading() {
     items.push({label: name});
   }
   setPagePath(items);
-  document.title = `${name} · ${project.name}`;
+  document.title = `${name} · ${project.name} · AI 知识点手册`;
 }
 function renderRoute() {
   const requested = location.hash.slice(1) || 'home';
