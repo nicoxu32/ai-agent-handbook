@@ -85,10 +85,13 @@ class EditableBuildTests(unittest.TestCase):
         result, data = self.build({})
         self.assertEqual(result.returncode, 0, result.stderr)
         questions = data['doubao']['questions']
-        self.assertEqual(len(questions), 33)
-        self.assertEqual(sum(q['category'] == 'pm' for q in questions), 17)
-        self.assertEqual(sum(q['category'] == 'tech' for q in questions), 16)
-        self.assertEqual(sum(bool(q['supplement']) for q in questions), 2)
+        self.assertEqual(len(questions), len(original['questions']))
+        self.assertEqual([q['id'] for q in questions], [q['id'] for q in original['questions']])
+        for category in original['categories']:
+            self.assertEqual(sum(q['category'] == category for q in questions), sum(q['category'] == category for q in original['questions']))
+        self.assertEqual(sum(bool(q['supplement']) for q in questions), sum(bool(q['supplement']) for q in original['questions']))
+        for url in original.get('sources', [original['sourceUrl']]):
+            self.assertIn(url, data['doubao']['source'])
         for question in original['questions']:
             self.assertIn(question['title'], data['doubao']['source'])
             self.assertIn(question['answer'], data['doubao']['source'])

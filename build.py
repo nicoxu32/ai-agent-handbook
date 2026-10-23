@@ -124,11 +124,12 @@ linked_ids = {number for node in architecture['nodes'] for number in node['chapt
 if linked_ids != set(range(1, 37)):
     raise ValueError('Architecture must link all 36 knowledge points')
 doubao = json.loads((ROOT / 'content/doubao-interviews.json').read_text(encoding='utf-8'))
-doubao_export = ['# 豆包面试题', f"来源：[{doubao['sourceTitle']}]({doubao['sourceUrl']})", '按原文整理。原文中的案例和经历表述为参考答案，不代表读者的真实履历。']
+doubao_sources = doubao.get('sources', [doubao['sourceUrl']])
+doubao_export = ['# 豆包面试题', '来源：' + ' · '.join(f'[豆包分享 {index + 1}]({url})' for index, url in enumerate(doubao_sources)), '按原文整理。原文中的案例和经历表述为参考答案，不代表读者的真实履历。']
 doubao_ids = set()
 for question in doubao['questions']:
     qid = question['id']
-    if qid in doubao_ids or question['category'] not in doubao['categories'] or not re.fullmatch(r'db-(pm|tech)-\d{2}', qid):
+    if qid in doubao_ids or question['category'] not in doubao['categories'] or not re.fullmatch(r'db-(pm|tech)-\d{2,}', qid):
         raise ValueError('Invalid or duplicate Doubao question')
     doubao_ids.add(qid)
     question['title'] = editable(f'doubao/{qid}/title', '面试题', question['title'], qid, False)
