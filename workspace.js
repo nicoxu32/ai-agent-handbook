@@ -7,7 +7,7 @@ document.getElementById('project-select').innerHTML = projects.map(project =>
 ).join('');
 const sectionRoutes = {
   overview: ['home', 'architecture', 'glossary', 'extra1', 'extra2', 'extra4'],
-  interview: ['interview', 'bank', 'practice', 'challenge']
+  interview: ['interview', 'bank', 'practice', 'challenge', 'doubao']
 };
 const learningRounds = DATA.rounds;
 const projectLastRoutes = {agent: 'home', hardware: 'hardware'};
@@ -21,7 +21,7 @@ function currentProject() {
 }
 function currentSection() {
   if (sectionRoutes.overview.includes(activeRoute)) return 'overview';
-  if (sectionRoutes.interview.includes(activeRoute) || activeRoute.startsWith('challenge-')) return 'interview';
+  if (sectionRoutes.interview.includes(activeRoute) || activeRoute.startsWith('challenge-') || activeRoute.startsWith('db-')) return 'interview';
   return 'catalog';
 }
 function chapterByNumber(number) {
@@ -52,7 +52,7 @@ function buildSidebar() {
   const chapter = DATA.chapters.find(item => item.id === activeRoute);
   if (chapter) navigationState.groups.add(String(chapter.group));
   const groupLinks = DATA.groups.map((group, index) => `<details class="nav-group" data-group="${index}" ${navigationState.groups.has(String(index)) ? 'open' : ''}><summary><span class="group-index">${String.fromCharCode(65 + index)}</span>${group}</summary>${DATA.chapters.filter(item => item.group === index).map(item => `<button class="nav-topic ${activeRoute === item.id ? 'active' : ''}" data-route="${item.id}" ${activeRoute === item.id ? 'aria-current="page"' : ''}><span class="num">${item.number}</span><span>${escapeHTML(item.short)}</span></button>`).join('')}</details>`).join('');
-  container.innerHTML = `<details class="nav-section" data-section="overview" ${navigationState.sections.has('overview') ? 'open' : ''}><summary><span>01</span>学习总览</summary><div class="section-links">${sidebarLink('home', '学习指南与路径')}${sidebarLink('architecture', '知识点任务架构图')}${sidebarLink('glossary', '常用术语说明')}</div></details><details class="nav-section" data-section="catalog" ${navigationState.sections.has('catalog') ? 'open' : ''}><summary><span>02</span>知识目录 <small>36</small></summary><div class="section-links">${sidebarLink('catalog', '全部知识点')}</div>${groupLinks}</details><details class="nav-section" data-section="interview" ${navigationState.sections.has('interview') ? 'open' : ''}><summary><span>03</span>AI 面试</summary><div class="section-links">${sidebarLink('interview', '面试练习总览')}${sidebarLink('bank', '核心面试题库 · 108 题', ['bank','practice'].includes(activeRoute))}${sidebarLink('challenge', 'AI 实时出题', activeRoute.startsWith('challenge'))}</div></details>`;
+  container.innerHTML = `<details class="nav-section" data-section="overview" ${navigationState.sections.has('overview') ? 'open' : ''}><summary><span>01</span>学习总览</summary><div class="section-links">${sidebarLink('home', '学习指南与路径')}${sidebarLink('architecture', '知识点任务架构图')}${sidebarLink('glossary', '常用术语说明')}</div></details><details class="nav-section" data-section="catalog" ${navigationState.sections.has('catalog') ? 'open' : ''}><summary><span>02</span>知识目录 <small>36</small></summary><div class="section-links">${sidebarLink('catalog', '全部知识点')}</div>${groupLinks}</details><details class="nav-section" data-section="interview" ${navigationState.sections.has('interview') ? 'open' : ''}><summary><span>03</span>AI 面试</summary><div class="section-links">${sidebarLink('interview', '面试练习总览')}${sidebarLink('bank', '核心面试题库 · 108 题', ['bank','practice'].includes(activeRoute))}${sidebarLink('doubao', '豆包面试题 · ' + DATA.doubao.questions.length + ' 题', activeRoute === 'doubao' || activeRoute.startsWith('db-'))}${sidebarLink('challenge', 'AI 实时出题', activeRoute.startsWith('challenge'))}</div></details>`;
   container.scrollTop = scrollTop;
 }
 function pageHeader(section, title, description) {
@@ -77,7 +77,7 @@ function catalogView() {
   main.innerHTML = `${pageHeader('知识目录', '36 个知识点，逐个讲明白。', '六个模块串起模型、知识、执行、集成、平台和产品。每个知识点都关联三道核心面试题，也可以继续让 AI 出新题。')}${sections}${footer()}`;
 }
 function interviewView() {
-  main.innerHTML = `${pageHeader('AI 面试', '把理解，变成自己的回答。', '从核心题掌握判断顺序，再用新的情境检验理解。答案以口述为主，练习时结合自己的真实经历。')}<div class="interview-options"><article><span class="eyebrow">CORE QUESTIONS</span><h2>108 道核心面试题</h2><p>36 个知识点，每节三道。按模块、知识点和关键词查找，再进入口述练习。</p><button class="btn primary" data-route="bank">浏览核心题库 ${icon('arrow')}</button></article><article><span class="eyebrow">NEW SCENARIOS</span><h2>AI 实时出题</h2><p>选择知识点与出题方向，获取新场景、口述参考答案和深入追问。</p><button class="btn primary" data-route="challenge">让 AI 出一道题 ${icon('arrow')}</button></article></div><div class="bottom-band"><div><h3>先说一遍，再看答案。</h3><p>按「核心判断 → 具体场景 → 边界与验证」组织回答。</p></div><button class="btn" data-route="extra2">查看口述方法 →</button></div>${footer()}`;
+  main.innerHTML = `${pageHeader('AI 面试', '把理解，变成自己的回答。', '从核心题掌握判断顺序，再用新的情境检验理解。答案以口述为主，练习时结合自己的真实经历。')}<div class="interview-options"><article><span class="eyebrow">CORE QUESTIONS</span><h2>108 道核心面试题</h2><p>36 个知识点，每节三道。按模块、知识点和关键词查找，再进入口述练习。</p><button class="btn primary" data-route="bank">浏览核心题库 ${icon('arrow')}</button></article><article><span class="eyebrow">NEW SCENARIOS</span><h2>AI 实时出题</h2><p>选择知识点与出题方向，获取新场景、口述参考答案和深入追问。</p><button class="btn primary" data-route="challenge">让 AI 出一道题 ${icon('arrow')}</button></article></div><div class="bottom-band"><div><h3>豆包面试题</h3><p>AI 产品经理与 AI 技术栈，共 ${DATA.doubao.questions.length} 道题，保留原文框架和口述答案。</p></div><button class="btn" data-route="doubao">浏览豆包面试题 →</button></div><div class="bottom-band"><div><h3>先说一遍，再看答案。</h3><p>按「核心判断 → 具体场景 → 边界与验证」组织回答。</p></div><button class="btn" data-route="extra2">查看口述方法 →</button></div>${footer()}`;
 }
 function filteredBank() {
   const query = bankQuery.trim().toLowerCase();
@@ -138,7 +138,7 @@ function updatePageHeading() {
   const project = currentProject();
   const chapter = DATA.chapters.find(item => item.id === activeRoute);
   const extra = DATA.extras.find(item => item.id === activeRoute);
-  const names = {home: '学习指南与路径', catalog: '知识目录', architecture: '知识点任务架构图', glossary: '常用术语说明', interview: 'AI 面试', bank: '核心面试题库'};
+  const names = {home: '学习指南与路径', catalog: '知识目录', architecture: '知识点任务架构图', glossary: '常用术语说明', interview: 'AI 面试', bank: '核心面试题库', doubao: '豆包面试题'};
   const sections = {overview: {label: '学习总览', route: 'home'}, catalog: {label: '知识目录', route: 'catalog'}, interview: {label: 'AI 面试', route: 'interview'}};
   const items = [{label: project.name, route: project.route}];
   let name = names[activeRoute] || extra?.title || project.name;
@@ -152,6 +152,10 @@ function updatePageHeading() {
     } else if (activeRoute === 'practice') {
       items.push({label: '核心面试题库', route: 'bank'});
       name = practiceQuestions()[state.practiceIndex].chapter.short;
+    } else if (activeRoute.startsWith('db-')) {
+      const question = DATA.doubao.questions.find(item => item.id === activeRoute);
+      items.push({label: '豆包面试题', route: 'doubao'});
+      name = DATA.doubao.categories[question.category] + ' · ' + question.id.split('-').at(-1);
     } else if (activeRoute.startsWith('challenge')) {
       items.push({label: 'AI 出题', route: 'challenge'});
       name = challengeChapter().short;
@@ -165,7 +169,7 @@ function renderRoute() {
   const requested = location.hash.slice(1) || 'home';
   const aliases = {path: 'home', guide: 'home', extra0: 'architecture', extra3: 'glossary'};
   let route = aliases[requested] || requested;
-  const routes = ['home','catalog','architecture','glossary','interview','bank','practice','challenge',...projects.filter(project => !project.ready).map(project => project.route),...DATA.chapters.map(chapter => chapter.id),...DATA.chapters.map(chapter => 'challenge-' + chapter.id),...DATA.extras.map(extra => extra.id)];
+  const routes = ['home','catalog','architecture','glossary','interview','bank','practice','challenge','doubao',...DATA.doubao.questions.map(question => question.id),...projects.filter(project => !project.ready).map(project => project.route),...DATA.chapters.map(chapter => chapter.id),...DATA.chapters.map(chapter => 'challenge-' + chapter.id),...DATA.extras.map(extra => extra.id)];
   if (!routes.includes(route)) route = 'home';
   if (route !== requested) history.replaceState(null, '', '#' + route);
   if (activeRoute !== route) answerVisible = false;
@@ -174,10 +178,11 @@ function renderRoute() {
   searchInput.value = '';
   setMenu(false);
   const chapter = DATA.chapters.find(item => item.id === route);
-  const views = {home, catalog: catalogView, architecture: architectureView, glossary: glossaryView, interview: interviewView, bank: bankView, practice};
+  const views = {home, catalog: catalogView, architecture: architectureView, glossary: glossaryView, interview: interviewView, bank: bankView, practice, doubao: doubaoView};
   if (!currentProject().ready) pendingProjectView();
   else if (chapter) lesson(chapter);
   else if (views[route]) views[route]();
+  else if (route.startsWith('db-')) doubaoView(route);
   else if (route.startsWith('challenge')) challengeView();
   else extraView(DATA.extras.find(item => item.id === route));
   buildSidebar();
@@ -194,13 +199,14 @@ function searchView(query) {
   setPagePath([{label: 'AI 智能体平台', route: 'home'}, {label: '搜索结果'}]);
   const normalized = query.toLowerCase();
   const chapters = DATA.chapters.filter(chapter => chapter.search.toLowerCase().includes(normalized));
+  const doubaoMatches = DATA.doubao.questions.filter(question => question.search.toLowerCase().includes(normalized));
   const supplements = [
     {id: 'home', title: '学习指南与路径', content: plain(DATA.guide) + learningRounds.map(round => round.title + round.description).join(' ')},
     {id: 'architecture', title: '知识点任务架构图', content: DATA.architecture.nodes.map(node => node.title + node.description + node.input + node.output).join(' ')},
     {id: 'glossary', title: '常用术语说明', content: DATA.glossary.map(item => item.term + item.explanation).join(' ')},
     ...DATA.extras.filter(extra => ['extra1','extra2','extra4'].includes(extra.id)).map(extra => ({id: extra.id, title: extra.title, content: plain(extra.html)}))
   ].filter(item => (item.title + item.content).toLowerCase().includes(normalized));
-  main.innerHTML = `<div class="reader">${pageHeader('项目内搜索', '找到需要的知识。', `“${escapeHTML(query)}” · ${chapters.length} 个知识点，${supplements.length} 篇学习资料`)}${chapters.map(chapter => resultCard(chapter, query)).join('')}${supplements.map(item => `<button class="result" data-route="${item.id}"><span class="result-top">学习总览</span><h3>${escapeHTML(item.title)}</h3><p>查看完整内容 →</p></button>`).join('')}${!chapters.length && !supplements.length ? '<div class="empty"><h3>没有找到匹配内容。</h3><p>试试更短的关键词。</p></div>' : ''}${footer()}</div>`;
+  main.innerHTML = `<div class="reader">${pageHeader('项目内搜索', '找到需要的知识。', `“${escapeHTML(query)}” · ${chapters.length} 个知识点，${supplements.length} 篇学习资料，${doubaoMatches.length} 道豆包面试题`)}${chapters.map(chapter => resultCard(chapter, query)).join('')}${supplements.map(item => `<button class="result" data-route="${item.id}"><span class="result-top">学习总览</span><h3>${escapeHTML(item.title)}</h3><p>查看完整内容 →</p></button>`).join('')}${doubaoMatches.map(question => `<button class="result" data-route="${question.id}"><span class="result-top">豆包面试题 · ${DATA.doubao.categories[question.category]}</span><h3>${escapeHTML(question.title)}</h3><p>查看回答框架与口述答案 →</p></button>`).join('')}${!chapters.length && !supplements.length && !doubaoMatches.length ? '<div class="empty"><h3>没有找到匹配内容。</h3><p>试试更短的关键词。</p></div>' : ''}${footer()}</div>`;
 }
 
 document.getElementById('project-select').addEventListener('change', event => {

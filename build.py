@@ -113,6 +113,27 @@ for trace_id, trace in architecture['traces'].items():
 linked_ids = {number for node in architecture['nodes'] for number in node['chapters']}
 if linked_ids != set(range(1, 37)):
     raise ValueError('Architecture must link all 36 knowledge points')
+doubao = json.loads((ROOT / 'content/doubao-interviews.json').read_text(encoding='utf-8'))
+doubao_export = ['# 豆包面试题', f"来源：[{doubao['sourceTitle']}]({doubao['sourceUrl']})", '按原文整理。原文中的案例和经历表述为参考答案，不代表读者的真实履历。']
+doubao_ids = set()
+for question in doubao['questions']:
+    qid = question['id']
+    if qid in doubao_ids or question['category'] not in doubao['categories'] or not re.fullmatch(r'db-(pm|tech)-\d{2}', qid):
+        raise ValueError('Invalid or duplicate Doubao question')
+    doubao_ids.add(qid)
+    question['title'] = editable(f'doubao/{qid}/title', '面试题', question['title'], qid, False)
+    doubao_export.append(f"## {doubao['categories'][question['category']]} · {qid.rsplit('-', 1)[-1]}\n\n{question['title']}")
+    search_parts = [question['title']]
+    for key, label in [('framework', '回答框架'), ('answer', '口述参考答案'), ('supplement', '原文补充：金句与案例')]:
+        raw = question[key]
+        if raw or key == 'answer':
+            raw = editable(f'doubao/{qid}/{key}', label, raw, qid)
+            doubao_export.extend(['### ' + label, raw])
+        display_markdown = re.sub(r'(\*\*)\n(?=\d+\. )', r'\1\n\n', raw)
+        question[key] = render(display_markdown) if raw else ''
+        search_parts.append(BeautifulSoup(question[key], 'html.parser').get_text(' '))
+    question['search'] = '\n'.join(search_parts)
+doubao['source'] = '\n\n'.join(doubao_export) + '\n'
 unknown = set(EDITS) - {field['key'] for field in FIELDS}
 if unknown:
     raise ValueError(f'Unknown editable fields: {sorted(unknown)}')
@@ -140,12 +161,13 @@ for extra in extras:
     if extra['id'] in {'extra1', 'extra2', 'extra4'}:
         export.append(extra['markdown'])
 source = '\n\n'.join(export) + '\n'
-payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'guide': guide_html, 'glossary': glossary, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS}, ensure_ascii=False).replace('<', '\\u003c')
+payload = json.dumps({'groups': GROUPS, 'chapters': chapters, 'extras': extras, 'guide': guide_html, 'glossary': glossary, 'architecture': architecture, 'source': source, 'rounds': layout['rounds'], 'pages': layout['pages'], 'editorFields': FIELDS, 'edits': EDITS, 'doubao': doubao}, ensure_ascii=False).replace('<', '\\u003c')
 template = (ROOT / 'template.html').read_text(encoding='utf-8')
 template = template.replace('__WORKSPACE_STYLE__', (ROOT / 'workspace.css').read_text(encoding='utf-8'))
 template = template.replace('__WORKSPACE_SCRIPT__', (ROOT / 'workspace.js').read_text(encoding='utf-8'))
 template = template.replace('__EDITOR_SCRIPT__', (ROOT / 'editor.js').read_text(encoding='utf-8'))
+template = template.replace('__DOUBAO_SCRIPT__', (ROOT / 'doubao.js').read_text(encoding='utf-8'))
 template = template.replace('__STATIC_SITE__', json.dumps(args.static))
 args.output.parent.mkdir(parents=True, exist_ok=True)
 args.output.write_text(template.replace('__HANDBOOK_DATA__', payload), encoding='utf-8')
-print(f'Generated {args.output.name}: {len(chapters)} chapters, {sum(len(c["questions"]) for c in chapters)} questions, {len(extras)} reading supplements')
+print(f'Generated {args.output.name}: {len(chapters)} chapters, {sum(len(c["questions"]) for c in chapters)} core questions, {len(doubao["questions"])} Doubao questions')

@@ -17,7 +17,7 @@ class EditableBuildTests(unittest.TestCase):
     def build(self, edits):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)
-            for name in ['build.py', 'template.html', 'workspace.js', 'workspace.css', 'editor.js', 'architecture.json']:
+            for name in ['build.py', 'template.html', 'workspace.js', 'workspace.css', 'editor.js', 'doubao.js', 'architecture.json']:
                 shutil.copyfile(ROOT / name, target / name)
             shutil.copytree(ROOT / 'content', target / 'content')
             (target / 'content/edits.json').write_text(json.dumps(edits), encoding='utf-8')
@@ -64,6 +64,36 @@ class EditableBuildTests(unittest.TestCase):
             result, _ = self.build(edits)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('ValueError', result.stderr)
+
+    def test_doubao_import_preserves_answers_categories_and_export(self):
+        original = json.loads((ROOT / 'content/doubao-interviews.json').read_text(encoding='utf-8'))
+        result, data = self.build({})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        questions = data['doubao']['questions']
+        self.assertEqual(len(questions), 33)
+        self.assertEqual(sum(q['category'] == 'pm' for q in questions), 17)
+        self.assertEqual(sum(q['category'] == 'tech' for q in questions), 16)
+        self.assertEqual(sum(bool(q['supplement']) for q in questions), 2)
+        for question in original['questions']:
+            self.assertIn(question['title'], data['doubao']['source'])
+            self.assertIn(question['answer'], data['doubao']['source'])
+            if question['framework']:
+                self.assertIn(question['framework'], data['doubao']['source'])
+
+    def test_doubao_edits_update_answers_search_and_download(self):
+        edits = {
+            'doubao/db-tech-01/title': 'RAG 编辑后的问题',
+            'doubao/db-tech-01/framework': '1. 先检索证据\n2. 再回答',
+            'doubao/db-tech-01/answer': '这是修改后的口述答案。',
+        }
+        result, data = self.build(edits)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        question = next(q for q in data['doubao']['questions'] if q['id'] == 'db-tech-01')
+        self.assertEqual(question['title'], edits['doubao/db-tech-01/title'])
+        self.assertIn('这是修改后的口述答案', question['answer'])
+        self.assertIn('这是修改后的口述答案', question['search'])
+        for value in edits.values():
+            self.assertIn(value, data['doubao']['source'])
 
 
 if __name__ == '__main__':

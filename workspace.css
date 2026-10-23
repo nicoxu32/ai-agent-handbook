@@ -121,3 +121,25 @@
 .editor-footer{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-top:16px;border-top:1px solid var(--line)}
 @media(max-width:760px){.page-path{font-size:11px;gap:3px 7px}.page-path strong{font-size:12px}.content-editor{padding:20px;width:calc(100vw - 20px);max-height:94dvh}.content-editor input,.content-editor textarea,.content-editor .select{font-size:16px}.editor-heading h2{font-size:24px}.editor-footer{align-items:stretch;flex-direction:column}.editor-footer>.actions{justify-content:space-between}.footer-actions{gap:16px}.topbar .search{width:100%}}
 @media print{.content-editor,.page-path{display:none!important}}
+.doubao-source{font-size:12px;color:var(--muted);line-height:1.9;margin:0 0 26px;max-width:850px}
+.doubao-source a{text-decoration:underline;text-underline-offset:3px}
+.doubao-controls{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:25px 0 18px}
+.doubao-categories{display:flex;gap:8px;flex-wrap:wrap}
+.doubao-search{display:grid;gap:6px;font-size:11px;color:var(--muted);min-width:230px}
+.doubao-search input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:var(--white);color:var(--ink);font-size:13px}
+.doubao-question{background:var(--white);border:1px solid var(--line);border-radius:5px;margin-bottom:13px;overflow:hidden}
+.doubao-question>summary{position:relative;list-style:none;cursor:pointer;padding:22px 55px 22px 25px}
+.doubao-question>summary::-webkit-details-marker{display:none}
+.doubao-meta{display:block;font-size:11px;color:var(--muted);margin-bottom:9px}
+.doubao-title{display:block;font-size:16px;font-weight:500;line-height:1.8;overflow-wrap:anywhere}
+.doubao-toggle{position:absolute;right:23px;top:37px;font:24px var(--serif);color:var(--green)}
+.doubao-question[open]>summary .doubao-toggle{font-size:0}
+.doubao-question[open]>summary .doubao-toggle:after{content:'−';font-size:24px}
+.doubao-answer{border-top:1px solid var(--line);padding:25px;max-width:950px}
+.doubao-answer section+section{margin-top:28px}
+.doubao-answer section>h3{font-size:13px;color:var(--green);letter-spacing:1px;margin-bottom:16px}
+.doubao-answer .prose{font-size:14px;line-height:2}
+.doubao-supplement{margin:24px 0;border-top:1px dashed var(--line);padding-top:17px;font-size:12px;color:var(--muted)}
+.doubao-supplement>summary{cursor:pointer;margin-bottom:16px}
+@media(max-width:760px){.doubao-controls{align-items:stretch;flex-direction:column;gap:16px}.doubao-search{min-width:0}.doubao-search input{font-size:16px}.doubao-categories .btn{padding:8px 10px}.doubao-question>summary{padding:18px 42px 18px 17px}.doubao-title{font-size:15px}.doubao-toggle{right:16px}.doubao-answer{padding:20px 17px}.doubao-source{font-size:11px}}
+@media print{.doubao-controls,.doubao-question>summary .doubao-toggle,.doubao-answer>.text-button{display:none}.doubao-answer{display:block!important}.doubao-question{break-inside:auto}}

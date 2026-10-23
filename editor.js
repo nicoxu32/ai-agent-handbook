@@ -27,6 +27,7 @@ const editorGroups = [
   {id: 'home', title: '学习总览 · 指南与路径'},
   ...Object.keys(DATA.pages).filter(id => id !== 'home').map(id => ({id, title: '页面介绍 · ' + DATA.pages[id].title})),
   ...DATA.chapters.map(chapter => ({id: chapter.id, title: `${chapter.number} · ${chapter.short}（含三道面试题）`})),
+  ...DATA.doubao.questions.map(question => ({id: question.id, title: `豆包 · ${DATA.doubao.categories[question.category]} ${question.id.split('-').at(-1)} · ${question.title}`})),
   ...DATA.architecture.nodes.map(node => ({id: 'arch-' + node.id, title: '架构图 · ' + node.title})),
   ...Object.entries(DATA.architecture.traces).map(([id, trace]) => ({id: 'trace-' + id, title: '任务路径 · ' + trace.title})),
   ...DATA.glossary.map((item, index) => ({id: 'glossary-' + index, title: '术语 · ' + item.term})),
@@ -135,6 +136,8 @@ async function loadEditorContent() {
   }
 }
 function groupForCurrentPage() {
+  if (DATA.doubao.questions.some(question => question.id === activeRoute)) return activeRoute;
+  if (activeRoute === 'doubao') return main.querySelector('.doubao-question[open]')?.dataset.questionId || filteredDoubaoQuestions()[0]?.id || DATA.doubao.questions[0].id;
   if (DATA.chapters.some(chapter => chapter.id === activeRoute)) return activeRoute;
   if (activeRoute.startsWith('challenge')) return challengeChapter().id;
   if (activeRoute === 'practice') return practiceQuestions()[state.practiceIndex].chapter.id;
