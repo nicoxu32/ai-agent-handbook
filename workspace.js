@@ -42,6 +42,7 @@ function buildSidebar() {
   const scrollTop = container.scrollTop;
   document.getElementById('project-select').value = project.id;
   searchInput.disabled = !project.ready;
+  document.querySelector('.topbar-edit').disabled = !project.ready;
   searchInput.placeholder = project.ready ? '搜索当前项目知识与题目…' : '本项目内容待补充';
   if (!project.ready) {
     container.innerHTML = `<div class="project-pending"><span class="badge">待补充</span><p>${escapeHTML(project.name)}的知识点与面试内容将在这里整理。</p></div>`;
@@ -61,7 +62,7 @@ function pageHeader(section, title, description) {
     title = escapeHTML(copy.title);
     description = escapeHTML(copy.description);
   }
-  return `<header class="workspace-page-head"><div class="content-heading"><h1 class="page-title">${title}</h1>${searchInput.value.trim() ? '' : contentEditButton()}</div><p class="hero-copy">${description}</p></header>`;
+  return `<header class="workspace-page-head"><h1 class="page-title">${title}</h1><p class="hero-copy">${description}</p></header>`;
 }
 function home() {
   const last = DATA.chapters.find(chapter => chapter.id === state.last);
