@@ -134,6 +134,7 @@
 @media print{.doubao-controls,.doubao-question>summary .doubao-toggle,.doubao-answer>.text-button{display:none}.doubao-answer{display:block!important}.doubao-question{break-inside:auto}}
 
 .topbar-tools{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-edit{flex-shrink:0;height:36px;white-space:nowrap}
 .reading-size{display:flex;align-items:center;flex-shrink:0;border:1px solid var(--line);border-radius:5px;background:var(--white);overflow:hidden}
 .reading-size button{height:36px;min-width:36px;padding:0 8px;font-size:12px;color:var(--green)}
 .reading-size button+button{border-left:1px solid var(--line)}
@@ -141,5 +142,5 @@
 .reading-size button:focus-visible{outline-offset:-3px}
 main{font-size:calc(14px * var(--reading-scale, 1));overflow-wrap:anywhere}
 @media(max-width:1000px) and (min-width:761px){.topbar{height:auto;min-height:76px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}.page-path{flex-basis:100%}.topbar-tools{margin-left:auto}}
-@media(max-width:760px){.topbar-tools{order:3;width:100%;gap:8px}.topbar-tools .search{order:0;flex:1;width:auto;min-width:0;margin-top:0}.topbar-tools .search input{padding-right:10px}.topbar-tools .search kbd{display:none}.reading-size button{min-width:34px;height:40px;padding:0 6px}}
+@media(max-width:760px){.topbar-edit{height:40px}.topbar-tools{order:3;width:100%;gap:8px}.topbar-tools .search{order:0;flex:1;width:auto;min-width:0;margin-top:0}.topbar-tools .search input{padding-right:10px}.topbar-tools .search kbd{display:none}.reading-size button{min-width:34px;height:40px;padding:0 6px}}
 @media print{main{--reading-scale:1!important}}

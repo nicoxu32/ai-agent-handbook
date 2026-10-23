@@ -32,7 +32,7 @@ __WORKSPACE_STYLE__
 <div class="sidebar-scroll" id="sidebar-nav"></div>
 </aside>
 <div class="overlay" id="overlay" hidden></div>
-<div class="workspace"><header class="topbar"><button class="menu-button" id="menu-button" aria-label="打开学习目录" aria-controls="sidebar" aria-expanded="false">☰</button><nav class="page-path" id="page-path" aria-label="当前位置"><strong id="page-name">学习总览</strong></nav><div class="topbar-tools"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="搜索知识点、面试题…" aria-label="搜索全文" autocomplete="off"><kbd aria-hidden="true">/</kbd></label><div class="reading-size" role="group" aria-label="正文字号"><button type="button" id="reading-smaller" aria-label="缩小文字" title="缩小文字">A−</button><button type="button" id="reading-reset" aria-label="恢复正常字号" title="恢复正常字号">正常</button><button type="button" id="reading-larger" aria-label="放大文字" title="放大文字">A+</button></div></div><span class="avatar" aria-label="AI 知识点手册">N</span></header><main id="main" tabindex="-1"></main></div>
+<div class="workspace"><header class="topbar"><button class="menu-button" id="menu-button" aria-label="打开学习目录" aria-controls="sidebar" aria-expanded="false">☰</button><nav class="page-path" id="page-path" aria-label="当前位置"><strong id="page-name">学习总览</strong></nav><div class="topbar-tools"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="搜索知识点、面试题…" aria-label="搜索全文" autocomplete="off"><kbd aria-hidden="true">/</kbd></label><div class="reading-size" role="group" aria-label="正文字号"><button type="button" id="reading-smaller" aria-label="缩小文字" title="缩小文字">A−</button><button type="button" id="reading-reset" aria-label="恢复正常字号" title="恢复正常字号">正常</button><button type="button" id="reading-larger" aria-label="放大文字" title="放大文字">A+</button></div></div><button type="button" class="btn small topbar-edit" data-action="edit-page">编辑内容</button><span class="avatar" aria-label="AI 知识点手册">N</span></header><main id="main" tabindex="-1"></main></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <noscript><p style="padding:30px">请开启 JavaScript 查看完整学习手册，或直接阅读同目录上级的 Markdown 原文。</p></noscript>
 <script id="handbook-data" type="application/json">__HANDBOOK_DATA__</script>
@@ -124,7 +124,7 @@ function setMenu(open) {
   else { sidebar.removeAttribute('role'); sidebar.removeAttribute('aria-modal'); }
 }
 function go(route) { searchInput.value = ''; setMenu(false); if (location.hash === '#' + route) renderRoute(); else location.hash = route; }
-function footer() { return `<footer class="footer"><span>为 AI 产品经理准备 · 口述学习与面试手册</span><div class="footer-actions"><button class="text-button" data-action="edit-page">编辑内容</button><button class="text-button" data-action="download">下载 Markdown ↗</button></div></footer>`; }
+function footer() { return `<footer class="footer"><span>为 AI 产品经理准备 · 口述学习与面试手册</span><div class="footer-actions"><button class="text-button" data-action="download">下载 Markdown ↗</button></div></footer>`; }
 function lesson(chapter) {
   state.last = chapter.id; persist();
   const index = DATA.chapters.indexOf(chapter);
