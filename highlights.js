@@ -11,7 +11,7 @@
   toolbar.hidden = true;
   toolbar.setAttribute('role', 'toolbar');
   toolbar.setAttribute('aria-label', '选中文字操作');
-  toolbar.innerHTML = '<button type="button" data-selection-action="highlight" title="将选中文字标为重点，保存在当前浏览器"><span aria-hidden="true">▰</span>划重点</button><button type="button" data-selection-action="append" hidden>追问</button>';
+  toolbar.innerHTML = '<button type="button" data-selection-action="highlight" title="将选中文字标为重点，保存在当前浏览器"><span aria-hidden="true">▰</span>划重点</button><button type="button" data-selection-action="append" hidden>追问</button><button type="button" data-selection-style="bold" hidden title="加粗并保存到本地">加粗</button><button type="button" data-selection-style="code" hidden title="标为行内代码并保存到本地">代码</button><button type="button" data-selection-style="underline" hidden title="加下划线并保存到本地">下划线</button><button type="button" data-selection-style="number" hidden title="给选中段落添加编号并保存到本地">编号</button><button type="button" data-selection-style="block" hidden title="将选中段落设为独立块并保存到本地">独立块</button>';
   const appendButton = toolbar.querySelector('[data-selection-action="append"]');
   document.body.append(toolbar);
 
@@ -175,6 +175,7 @@
     pending = selectedParts(range);
     if (!pending.length) return hideToolbar();
     appendButton.hidden = !appendTargetForSelection(pending);
+    toolbar.querySelectorAll('[data-selection-style]').forEach(button => { button.hidden = !formatTargetForSelection(pending); });
     toolbar.hidden = false;
     const rect = range.getBoundingClientRect();
     const width = toolbar.offsetWidth;
@@ -225,6 +226,12 @@
     hideToolbar();
     if (target) openAppend(target);
   });
+  toolbar.querySelectorAll('[data-selection-style]').forEach(button => button.addEventListener('click', () => {
+    const target = formatTargetForSelection(pending);
+    window.getSelection().removeAllRanges();
+    hideToolbar();
+    if (target) saveSelectionFormat(target, button.dataset.selectionStyle);
+  }));
   document.addEventListener('selectionchange', () => {
     clearTimeout(selectionTimer);
     selectionTimer = setTimeout(updateSelection, 140);

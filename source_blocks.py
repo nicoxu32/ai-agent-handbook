@@ -9,6 +9,7 @@ def attach_source_blocks(source, soup, field_key, render_plain):
     records = []
     boundaries = [match.start() for match in re.finditer(r'\n[ \t]*\n', source)] + [len(source)]
     mapped = set()
+    ends = {}
     for end in boundaries:
         prefix = BeautifulSoup(render_plain(source[:end]), 'html.parser')
         nodes = [node for node in prefix.contents if isinstance(node, Tag)]
@@ -18,11 +19,14 @@ def attach_source_blocks(source, soup, field_key, render_plain):
         if [str(node) for node in nodes] != signatures[:len(nodes)]:
             continue
         root = roots[index]
-        if not root.get_text().strip():
+        if not root.get_text().strip() and not root.find('img'):
             continue
         mapped.add(index)
+        start = 0 if index == 0 else ends.get(index - 1)
+        ends[index] = end
         root['data-append-index'] = str(len(records))
         root['data-append-key'] = field_key
         # Browser string offsets use UTF-16 code units, including for emoji.
-        records.append({'end': len(source[:end].encode('utf-16-le')) // 2, 'text': root.get_text()})
+        records.append({'start': len(source[:start].encode('utf-16-le')) // 2 if start is not None else None,
+                        'end': len(source[:end].encode('utf-16-le')) // 2, 'text': root.get_text()})
     return records

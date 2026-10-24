@@ -10,13 +10,15 @@ import sys
 import tempfile
 import threading
 from content_store import document_text, load_documents, read_document
+from image_assets import NAME as IMAGE_NAME
 
 LOCK = threading.RLock()
-CONTENT_PATHS = ['content/documents', 'content/documents.json', 'content/doubao-interviews.json']
+CONTENT_PATHS = ['content/documents', 'content/documents.json', 'content/doubao-interviews.json', 'content/images']
 
 
 def is_publishable_content(path):
-    return path in CONTENT_PATHS[1:] or bool(re.fullmatch(r'content/documents/[a-zA-Z0-9_-]+\.md', path))
+    return path in CONTENT_PATHS[1:3] or bool(re.fullmatch(r'content/documents/[a-zA-Z0-9_-]+\.md', path)) or (
+        path.startswith('content/images/') and bool(IMAGE_NAME.fullmatch(path.removeprefix('content/images/'))))
 
 
 def check_publish_paths(paths, committed=False):
@@ -67,7 +69,8 @@ def status(root):
     paths = run(root, ['git', 'diff', 'HEAD', '--name-only', '--', 'content/documents']).splitlines()
     untracked = run(root, ['git', 'ls-files', '--others', '--exclude-standard', 'content/documents']).splitlines()
     ahead = run(root, ['git', 'rev-list', '--count', 'origin/main..HEAD'])
-    return {'pending': len(set(paths + untracked)), 'unpushed': int(ahead)}
+    images = run(root, ['git', 'ls-files', '--others', '--exclude-standard', 'content/images']).splitlines()
+    return {'pending': len(set(paths + untracked)), 'images': len(images), 'unpushed': int(ahead)}
 
 
 def document(root, group):
@@ -131,6 +134,22 @@ def save(root, body):
         return {'saved': True, 'revision': hashlib.sha256(text.encode()).hexdigest(), **status(root)}
 
 
+def format_selection(root, body):
+    from rich_text import format_markdown
+    with LOCK:
+        current = document(root, body.get('group'))
+        if current['revision'] != body.get('revision'):
+            raise ValueError('原文已被其他窗口修改，请刷新后重新选择；没有覆盖内容。')
+        field = body.get('field')
+        manifest = json.loads((root / 'content/documents.json').read_text())
+        editable = {item['key'] for item in manifest[body['group']]['fields'] if item['multiline']}
+        if not isinstance(field, str) or field not in editable:
+            raise ValueError('此内容不支持划词排版，请使用顶部编辑功能。')
+        values = current['values']
+        values[field] = format_markdown(values[field], body.get('start'), body.get('end'), body.get('quote'), body.get('style'))
+        return save(root, {'group': body['group'], 'revision': current['revision'], 'values': values})
+
+
 def publish(root):
     with LOCK:
         if run(root, ['git', 'branch', '--show-current']) != 'main':
@@ -158,6 +177,7 @@ def publish(root):
         changed = run(root, ['git', 'status', '--porcelain', '--untracked-files=all']).splitlines()
         check_publish_paths([line[3:] for line in changed])
         if changed:
+            (root / 'content/images').mkdir(exist_ok=True)
             run(root, ['git', 'add', '--', *CONTENT_PATHS])
             run(root, ['git', 'commit', '-m', 'Update locally edited handbook documents'])
         if status(root)['unpushed']:

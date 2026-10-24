@@ -2,10 +2,11 @@ from pathlib import Path
 import argparse
 import json
 import re
-import markdown
 from bs4 import BeautifulSoup
 from source_blocks import attach_source_blocks
 from content_store import load_documents
+from rich_text import render_markdown
+from image_assets import export_images
 
 ROOT = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser(description='Build the handbook for local use or static hosting')
@@ -42,28 +43,7 @@ def render(text, field_key=None):
     text = re.sub(r'<a id="k\d+"></a>', '', text)
     diagram = '''<div class="flow" role="img" aria-label="任务流程：用户目标经过权限和状态确认，工作流或智能体调用知识、工具和多模态能力，核验并交付结果；日志、评测和版本记录贯穿各步骤。"><div>用户目标与业务约束</div><span>↓</span><div>身份权限 · 任务状态 · 范围确认</div><span>↓</span><div>工作流 / Agent 选择下一步</div><span>↓</span><div class="flow-branches"><div>知识与检索</div><div>工具与接口</div><div>多模态理解</div></div><span>↓</span><div>模型处理 → 事实与授权检查 → 必要时人工确认</div><span>↓</span><div>核验真实执行状态 → 继续任务或交付结果</div><small>日志 · 评测 · 成本 · 版本记录贯穿全过程</small></div>'''
     text = re.sub(r'```mermaid\n.*?```', lambda _: diagram, text, flags=re.S)
-    html = markdown.markdown(text, extensions=['tables', 'fenced_code', 'nl2br'])
-    soup = BeautifulSoup(html, 'html.parser')
-    allowed = {'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'strong', 'em', 'b', 'i', 'del', 'blockquote', 'pre', 'code', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'a', 'hr', 'br', 'div', 'span', 'small'}
-    for tag in list(soup.find_all(True)):
-        if tag.name is None:
-            continue
-        if tag.name in {'script', 'style', 'iframe', 'object', 'embed', 'svg', 'math', 'form', 'input'}:
-            tag.decompose()
-        elif tag.name not in allowed:
-            tag.unwrap()
-        else:
-            tag.attrs = {key: value for key, value in tag.attrs.items() if key in {'href', 'title', 'class', 'role', 'aria-label'}}
-    for a in soup.find_all('a', href=True):
-        if not re.match(r'^(https?://|#)', a['href'], re.I):
-            del a['href']
-            continue
-        if a['href'].startswith('https://'):
-            a['target'] = '_blank'
-            a['rel'] = 'noopener noreferrer'
-    for table in soup.find_all('table'):
-        wrapper = soup.new_tag('div', attrs={'class': 'table-scroll', 'tabindex': '0', 'aria-label': '可横向滚动的表格'})
-        table.wrap(wrapper)
+    soup = BeautifulSoup(render_markdown(text), 'html.parser')
     if field_key:
         APPEND_TARGETS[field_key] = attach_source_blocks(source_text, soup, field_key, render)
     return str(soup)
@@ -181,5 +161,7 @@ template = template.replace('__TERMS_SCRIPT__', (ROOT / 'terms.js').read_text(en
 template = template.replace('__DOUBAO_SCRIPT__', (ROOT / 'doubao.js').read_text(encoding='utf-8'))
 template = template.replace('__STATIC_SITE__', json.dumps(args.static))
 args.output.parent.mkdir(parents=True, exist_ok=True)
+if args.static:
+    export_images(CONTENT, args.output.parent)
 args.output.write_text(template.replace('__HANDBOOK_DATA__', payload), encoding='utf-8')
 print(f'Generated {args.output.name}: {len(chapters)} chapters, {sum(len(c["questions"]) for c in chapters)} core questions, {len(doubao["questions"])} Doubao questions')

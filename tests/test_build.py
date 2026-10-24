@@ -18,7 +18,7 @@ class EditableBuildTests(unittest.TestCase):
     def build(self, edits):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)
-            for name in ['build.py', 'template.html', 'workspace.js', 'workspace.css', 'editor.js', 'highlights.js', 'append.js', 'terms.js', 'source_blocks.py', 'content_store.py', 'doubao.js', 'architecture.json']:
+            for name in ['build.py', 'template.html', 'workspace.js', 'workspace.css', 'editor.js', 'highlights.js', 'append.js', 'terms.js', 'source_blocks.py', 'content_store.py', 'rich_text.py', 'image_assets.py', 'doubao.js', 'architecture.json']:
                 shutil.copyfile(ROOT / name, target / name)
             shutil.copytree(ROOT / 'content', target / 'content')
             from content_store import load_documents, document_text

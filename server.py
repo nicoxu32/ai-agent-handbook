@@ -10,6 +10,7 @@ import socket
 import threading
 import ipaddress
 import local_content
+import image_assets
 import markdown
 from html.parser import HTMLParser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -259,6 +260,18 @@ class HandbookHandler(BaseHTTPRequestHandler):
             self.send_json(200, {'app': 'nico-handbook-local-v1', 'token': SESSION_TOKEN, **local_content.status(ROOT)})
         elif path == '/api/status':
             self.send_json(200, public_config())
+        elif path.startswith('/media/'):
+            try:
+                image = image_assets.asset_path(ROOT / 'content', path.removeprefix('/media/'))
+                payload = image.read_bytes()
+            except (ValueError, OSError):
+                self.send_json(404, {'error': '图片不存在。'})
+                return
+            self.send_response(200)
+            self.send_header('Content-Type', {'.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp'}[image.suffix])
+            self.send_header('Content-Length', str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
         elif path in {'/', '/index.html'}:
             try:
                 payload = local_content.current_html(ROOT)
@@ -288,7 +301,7 @@ class HandbookHandler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get('Content-Length', '0'))
-            if not 0 < length <= 3000000 or not self.headers.get('Content-Type', '').startswith('application/json'):
+            if not 0 < length <= 7500000 or not self.headers.get('Content-Type', '').startswith('application/json'):
                 raise ValueError('请求格式不正确或过长。')
             body = json.loads(self.rfile.read(length))
             path = urlsplit(self.path).path
@@ -305,6 +318,10 @@ class HandbookHandler(BaseHTTPRequestHandler):
                     GENERATION_SLOT.release()
             elif path == '/api/local/save':
                 result = local_content.save(ROOT, body)
+            elif path == '/api/local/format':
+                result = local_content.format_selection(ROOT, body)
+            elif path == '/api/local/upload-image':
+                result = {**image_assets.upload(ROOT / 'content', body), **local_content.status(ROOT)}
             elif path == '/api/local/publish':
                 result = local_content.publish(ROOT)
             else:

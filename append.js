@@ -184,7 +184,8 @@ function appendedMarkdown(target, addition) {
     paragraph.replace(/([\\`*_{}\[\]#+.!|()-])/g, '\\$1').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '  \n'));
   const before = target.source.slice(0, target.end).replace(/\n+$/, '');
   const after = target.source.slice(target.end).replace(/^\n+/, '');
-  return before + '\n\n' + paragraphs.join('\n\n') + (after ? '\n\n' + after : '');
+  const block = '> [!SUPPLEMENT]\n> ' + paragraphs.join('\n\n').replace(/\n/g, '\n> ');
+  return before + '\n\n' + block + (after ? '\n\n' + after : '');
 }
 
 async function saveAppend(event) {

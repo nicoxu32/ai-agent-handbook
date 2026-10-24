@@ -162,6 +162,7 @@ def run():
                 with page.expect_navigation():
                     page.locator('#append-save').click()
                 expect(page.locator(block(key))).to_contain_text('本地追加 😀 <script>不会执行</script>。')
+                expect(page.locator(block(key)+' .callout-supplement')).to_contain_text('人工确认的补充')
                 assert page.locator(block(key)+' script').count()==0
                 assert ('document', 403) in responses
                 assert ('status', 200) in responses
