@@ -3568,5 +3568,205 @@
         "multiline": true
       }
     ]
+  },
+  "db-pm-21": {
+    "title": "AI 技术更新换代很快。作为产品经理，你怎么判断一个 AI 能力现在是否\"够成熟\"、值不值得投入做成产品，还是应该再观望？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-21/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-21/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-21/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-23": {
+    "title": "讲讲模型的参数量（规模）和能力的关系——是不是模型越大就一定越强？还有哪些因素影响能力？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-23/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-23/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-23/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-22": {
+    "title": "很多用户对 AI 期待过高、用起来又失望。作为产品经理，你会怎么通过产品设计，帮用户建立对 AI 的正确预期？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-22/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-22/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-22/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-24": {
+    "title": "讲讲\"多 Agent\"（Multi-Agent）架构——为什么要用多个 Agent 而不是一个 Agent？它一般怎么分工协作？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-24/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-24/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-24/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-23": {
+    "title": "同一个功能，有时候该把 AI \"藏起来\"让用户无感，有时候又该\"突出 AI\"让用户感知。作为产品经理，你怎么决定哪些场景该藏、哪些该突出？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-23/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-23/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-23/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-25": {
+    "title": "讲讲大模型的服务部署和推理延迟优化——为什么重要？一般有哪些手段来降低延迟、让响应更快？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-25/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-25/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-25/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-24": {
+    "title": "当用户问\"AI 为什么给我这个结果\"时，作为产品经理，你怎么理解 AI 的\"可解释性\"，并把它落地到产品设计里？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-24/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-24/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-24/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-26": {
+    "title": "讲讲 Transformer——它是大模型的基石。它解决的核心问题是什么？基本工作原理是怎样的？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-26/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-26/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-26/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-pm-25": {
+    "title": "AI 产品的效果很依赖数据质量。作为产品经理，你会怎么从源头上管理和提升数据的质量？",
+    "fields": [
+      {
+        "key": "doubao/db-pm-25/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-pm-25/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-pm-25/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-27": {
+    "title": "讲讲向量数据库（Vector Database）——它解决什么问题？在 AI 应用里怎么选型？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-27/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-27/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-27/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
   }
 }

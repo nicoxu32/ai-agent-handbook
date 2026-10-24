@@ -32,6 +32,7 @@ class DoubaoSyncTests(unittest.TestCase):
             (root / 'scripts').mkdir()
             shutil.copyfile(ROOT / 'scripts/sync_doubao.py', root / 'scripts/sync_doubao.py')
             before = {p.name: p.read_bytes() for p in (root / 'content/documents').glob('*.md')}
+            original_count = len(json.loads((root / 'content/doubao-interviews.json').read_text())['questions'])
             answer = '新增完整口述答案，讨论证据与实际取舍。' * 15
             body = f'## 题目二｜AI 技术知识点方向\n\n**题干：** 如何验证新增的隔离测试题目？\n\n**框架：**\n1. 核对来源\n\n**口述参考答案：**\n\n{answer}'
             data = {'data': {'share_info': {'message_index_end': '2'}, 'message_snapshot': {'message_list': [message(2, body)]}}}
@@ -48,7 +49,7 @@ class DoubaoSyncTests(unittest.TestCase):
                 self.assertEqual((root / 'content/documents' / name).read_bytes(), original)
             built = subprocess.run([sys.executable, 'build.py', '--static'], cwd=root, capture_output=True, text=True)
             self.assertEqual(built.returncode, 0, built.stderr)
-            self.assertIn('40 Doubao questions', built.stdout)
+            self.assertIn(f'{original_count + len(added)} Doubao questions', built.stdout)
 
     def test_append_preserves_existing_and_second_run_is_noop(self):
         old = {**question('pm', '如何评估 AI？', 'old'), 'id': 'db-pm-17', 'supplement': 'Keep this supplement'}
