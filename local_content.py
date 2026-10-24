@@ -74,13 +74,46 @@ def status(root):
 
 
 def document(root, group):
+    from rich_text import render_markdown
     with LOCK:
         manifest, values, revisions = load_documents(root / 'content')
         if group not in manifest:
             raise ValueError('请选择有效的内容页面。')
         fields = manifest[group]['fields']
         return {'values': {f['key']: values[f['key']] for f in fields},
+                'html': {f['key']: render_markdown(values[f['key']]) for f in fields if f['multiline']},
                 'revision': revisions[group], 'path': f'content/documents/{group}.md'}
+
+
+def editor_preview(root, body):
+    """Render legacy Markdown drafts and convert only fields changed in rich mode."""
+    from rich_text import markdown_from_editor, render_markdown
+    manifest = json.loads((root / 'content/documents.json').read_text())
+    group = body.get('group')
+    if not isinstance(group, str) or group not in manifest:
+        raise ValueError('请选择有效的内容页面。')
+    fields = manifest[group]['fields']
+    values, rich = body.get('values'), body.get('rich', {})
+    if not isinstance(values, dict) or set(values) != {field['key'] for field in fields}:
+        raise ValueError('编辑字段不完整，请保留草稿并载入最新文件。')
+    if not isinstance(rich, dict) or not set(rich) <= {field['key'] for field in fields if field['multiline']}:
+        raise ValueError('富文本字段无效。')
+    values = dict(values)
+    values.update({key: markdown_from_editor(html) for key, html in rich.items()})
+    # Use the same field validation as a disk save, including per-field size limits.
+    text = document_text(manifest[group]['title'], fields, values)
+    read_document(text, fields)
+    return {'values': values, 'html': {field['key']: render_markdown(values[field['key']])
+                                     for field in fields if field['multiline']}}
+
+
+def save_rich(root, body):
+    with LOCK:
+        current = document(root, body.get('group'))
+        if current['revision'] != body.get('revision'):
+            raise ValueError('文件已被其他窗口或编辑器修改，尚未覆盖。请下载草稿并载入最新内容后合并。')
+        prepared = editor_preview(root, body)
+        return save(root, {'group': body['group'], 'revision': body['revision'], 'values': prepared['values']})
 
 
 def open_document(root, group):

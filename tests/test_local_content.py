@@ -83,6 +83,26 @@ class LocalContentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '其他窗口'):
             local_content.save(self.root, {'group': 'k01', **doc})
 
+    def test_rich_save_only_converts_changed_fields_and_keeps_conflicting_drafts_safe(self):
+        doc = local_content.document(self.root, 'k01')
+        head = git(self.root, 'rev-parse', 'HEAD')
+        original = dict(doc['values'])
+        rich = {'chapter/k01/intro': '<h3>怎么理解 AI？</h3><blockquote data-callout="SUPPLEMENT"><p>新增 <strong>解释</strong>。</p></blockquote>'}
+        body = {'group': 'k01', 'revision': doc['revision'], 'values': original, 'rich': rich}
+        prepared = local_content.editor_preview(self.root, body)
+        self.assertEqual(local_content.document(self.root, 'k01')['revision'], doc['revision'])
+        local_content.save_rich(self.root, body)
+        current = local_content.document(self.root, 'k01')
+        self.assertIn('> [!SUPPLEMENT]', current['values']['chapter/k01/intro'])
+        self.assertEqual(current['values'], prepared['values'])
+        for key in original:
+            if key not in rich:
+                self.assertEqual(current['values'][key], original[key])
+        self.assertEqual(git(self.root, 'rev-parse', 'HEAD'), head)
+        with self.assertRaisesRegex(ValueError, '其他窗口'):
+            local_content.save_rich(self.root, body)
+        self.assertEqual(local_content.document(self.root, 'k01')['revision'], current['revision'])
+
     def test_validation_failure_does_not_replace_file(self):
         doc = local_content.document(self.root, 'k01')
         before = (self.root / doc['path']).read_bytes()
@@ -188,7 +208,9 @@ class LocalContentTests(unittest.TestCase):
         git(other, 'config', 'user.email', 'test@example.invalid')
         git(other, 'config', 'user.name', 'Test')
         path = 'content/documents/k01.md'
-        (other / path).write_text((other / path).read_text().replace('先理解它在做什么', '远端已经改写'))
+        remote_doc = local_content.document(other, 'k01')
+        original = remote_doc['values']['chapter/k01/intro']
+        (other / path).write_text((other / path).read_text().replace(original, original + '\n\n远端已经改写。'))
         git(other, 'add', path)
         git(other, 'commit', '-m', 'Remote change')
         git(other, 'push')

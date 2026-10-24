@@ -103,6 +103,69 @@ class ReadingConverter(MarkdownConverter):
         return super().convert_img(el, text, parent_tags)
 
 
+def markdown_from_editor(html):
+    """Convert schema-based editor HTML, checking the round trip before saving."""
+    if not isinstance(html, str) or len(html) > 240000:
+        raise ValueError('编辑内容过长或格式无效，请缩短此分区。')
+    soup = BeautifulSoup(html, 'html.parser')
+    allowed = {'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'strong',
+               'em', 'b', 'i', 'u', 's', 'del', 'blockquote', 'pre', 'code', 'table',
+               'thead', 'tbody', 'tr', 'th', 'td', 'a', 'hr', 'br', 'img'}
+    for node in list(soup.find_all(True)):
+        if node.name is None:
+            continue
+        if node.name in {'script', 'style', 'iframe', 'object', 'embed', 'svg', 'form'}:
+            node.decompose()
+        elif node.name not in allowed:
+            node.unwrap()
+        else:
+            if node.name in {'td', 'th'} and any(str(node.get(key, '1')) != '1' for key in ['colspan', 'rowspan']):
+                raise ValueError('Markdown 表格不支持合并单元格，请拆开单元格后保存。')
+            attributes = {'a': {'href', 'title'}, 'img': {'src', 'alt', 'title'},
+                          'blockquote': {'data-callout'}, 'code': {'class'}, 'ol': {'start'}}.get(node.name, set())
+            node.attrs = {key: value for key, value in node.attrs.items() if key in attributes}
+            if node.name == 'blockquote' and node.get('data-callout') not in CALLOUTS:
+                node.attrs = {}
+            if node.name == 'a' and not re.match(r'^(https?://|#)', node.get('href', ''), re.I):
+                node.unwrap()
+                continue
+            if node.name == 'img' and not IMAGE.fullmatch(node.get('src', '')):
+                raise ValueError('请使用「插入图片」将图片存到本地后再保存，不支持外部图片地址。')
+            if node.name == 's':
+                node.name = 'del'
+    for comment in soup.find_all(string=lambda value: isinstance(value, Comment)):
+        comment.extract()
+
+    def language(pre):
+        classes = pre.code.get('class', []) if pre.code else []
+        return next((name[9:] for name in classes if name.startswith('language-')), '')
+
+    converted = ReadingConverter(heading_style='ATX', bullets='-', newline_style='SPACES',
+                                 escape_underscores=True, code_language_callback=language).convert(str(soup)).strip()
+    checked = BeautifulSoup(render_markdown(converted), 'html.parser')
+    def normalize(text):
+        return re.sub(r'\s+', '', text)
+
+    def signature(tree, tag, attr):
+        result = []
+        for node in tree.find_all(tag):
+            value = node.get(attr)
+            if tag == 'img':
+                value = (value.removeprefix('../images/').removeprefix('media/'), node.get('alt', ''))
+            result.append(value)
+        return result
+
+    if normalize(soup.get_text()) != normalize(checked.get_text()):
+        raise ValueError('此段排版无法完整转换为 Markdown，尚未保存。请下载草稿后调整复杂结构。')
+    for tag, attr in [('img', 'src'), ('a', 'href'), ('blockquote', 'data-callout')]:
+        if signature(soup, tag, attr) != signature(checked, tag, attr):
+            raise ValueError('图片、链接或补充块无法完整保存，请保留草稿并检查排版。')
+    for tag in ['table', 'pre']:
+        if [normalize(node.get_text()) for node in soup.find_all(tag)] != [normalize(node.get_text()) for node in checked.find_all(tag)]:
+            raise ValueError('表格或代码无法完整保存，请保留草稿并检查排版。')
+    return converted
+
+
 def codepoint_offset(text, offset):
     if not isinstance(offset, int) or isinstance(offset, bool) or offset < 0:
         raise ValueError('选区位置无效，请重新选择文字。')

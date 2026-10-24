@@ -8,3 +8,4 @@ _site/
 
 .local/
 index.html
+node_modules/

@@ -56,21 +56,26 @@ def run():
                 key = 'chapter/k01/intro'
                 original_head = git(root, 'rev-parse', 'HEAD')
                 page.locator('[data-action="edit-page"]').click()
-                expect(page.locator('#editor-status')).to_contain_text('已读取')
+                page.wait_for_function('editor.active && editor.ready && !editor.busy')
                 page.locator('#editor-open-file').click()
-                expect(page.locator('#editor-status')).to_contain_text('已请求文本编辑器')
+                expect(page.locator('#editor-status')).to_contain_text('已打开原文件')
                 assert opened == [{'group':'k01'}]
-                source = page.locator(f'[data-field-key="{key}"]').input_value()
-                new_text = source+'\n\n离线保存测试。\n换行即时可见。'
-                page.locator(f'[data-field-key="{key}"]').fill(new_text)
+                surface = page.locator(f'[data-field-key="{key}"] .document-surface')
+                page.evaluate('(key)=>editor.instances.get(key).view.commands.focus("end")', key)
+                page.keyboard.press('Enter')
+                page.keyboard.insert_text('离线保存测试。')
+                page.keyboard.press('Shift+Enter')
+                page.keyboard.insert_text('换行即时可见。')
                 expect(page.locator('#editor-open-file')).to_be_disabled()
                 page.locator('#editor-close').click()
                 page.reload()
                 page.locator('[data-action="edit-page"]').click()
                 expect(page.locator('#editor-status')).to_contain_text('已恢复未保存草稿')
-                expect(page.locator(f'[data-field-key="{key}"]')).to_have_value(new_text)
+                expect(surface).to_contain_text('离线保存测试。')
                 with page.expect_navigation():
                     page.locator('#editor-save').click()
+                page.wait_for_function('editor.active && editor.ready && !editor.busy')
+                page.locator('#editor-close').click()
                 expect(page.locator(block(key))).to_contain_text('离线保存测试')
                 assert '离线保存测试' in (root/'content/documents/k01.md').read_text()
                 assert git(root, 'rev-parse', 'HEAD') == original_head
@@ -205,15 +210,15 @@ def run():
                 print('PASS: write-step expiration refreshes once; origin rejection, conflicts, server errors and lost responses never auto-retry; repeated expiration is bounded.')
 
                 page.locator('[data-action="edit-page"]').click()
-                expect(page.locator('#editor-status')).to_contain_text('已读取')
-                page.locator(f'[data-field-key="{key}"]').fill('不应覆盖外部修改。')
+                page.wait_for_function('editor.active && editor.ready && !editor.busy')
+                surface.fill('不应覆盖外部修改。')
                 path = root/'content/documents/k01.md'
                 external = path.read_text().replace('离线保存测试', '外部编辑器的新内容')
                 path.write_text(external)
                 page.locator('#editor-save').click()
                 expect(page.locator('#editor-status')).to_contain_text('文件已被其他窗口')
                 assert path.read_text() == external
-                expect(page.locator(f'[data-field-key="{key}"]')).to_have_value('不应覆盖外部修改。')
+                expect(surface).to_have_text('不应覆盖外部修改。')
                 page.locator('#editor-close').click()
                 page.reload()
                 expect(page.locator(block(key))).to_contain_text('外部编辑器的新内容')
@@ -223,13 +228,15 @@ def run():
                     page.set_viewport_size({'width':width,'height':900})
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                     page.locator('[data-action="edit-page"]').click()
-                    expect(page.locator('#editor-status')).to_contain_text('已恢复')
-                    header = page.locator('.content-editor:not(.append-editor) .editor-heading').bounding_box()
-                    footer = page.locator('.content-editor:not(.append-editor) .editor-footer').bounding_box()
-                    page.locator('.content-editor:not(.append-editor) .editor-body').evaluate('el=>el.scrollTop=el.scrollHeight')
-                    assert page.locator('.content-editor:not(.append-editor) .editor-heading').bounding_box()==header
-                    assert page.locator('.content-editor:not(.append-editor) .editor-footer').bounding_box()==footer
-                    assert footer['x']>=0 and footer['x']+footer['width']<=width
+                    page.wait_for_function('editor.active && editor.ready && !editor.busy')
+                    expect(page.locator('#editor-status')).to_contain_text('草稿对应的文件已更新')
+                    expect(surface).to_have_text('不应覆盖外部修改。')
+                    page.evaluate('scrollTo(0,0)')
+                    toolbar = page.locator('.document-toolbar')
+                    header = toolbar.bounding_box()
+                    page.evaluate('scrollTo(0,700)')
+                    assert abs(toolbar.bounding_box()['y']-header['y']) < 2
+                    assert header['x']>=0 and header['x']+header['width']<=width
                     page.screenshot(path=f'/tmp/local-editor-{width}.png')
                     page.locator('#editor-close').click()
                 published = []
@@ -241,10 +248,10 @@ def run():
                 expect(page.locator('#publish-status')).to_contain_text('已同步，等待网站部署')
                 assert published == [{}]
                 assert page.locator('#publish-status a').get_attribute('href').endswith('/actions')
-                print('PASS: footer opens selected Markdown; dirty draft blocks external opening; publishing is global.')
+                print('PASS: toolbar opens selected Markdown; dirty draft blocks external opening; publishing is global.')
                 assert not errors, errors
                 browser.close()
-                print('PASS: desktop and mobile editor fits viewport; heading and local save controls fixed.')
+                print('PASS: desktop and mobile editor fits viewport; toolbar and local save controls fixed.')
         finally:
             process.terminate()
             process.wait(timeout=5)

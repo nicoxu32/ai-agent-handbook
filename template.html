@@ -284,6 +284,7 @@ document.getElementById('menu-button').addEventListener('click',()=>setMenu(true
 document.getElementById('close-menu').addEventListener('click',()=>{setMenu(false);document.getElementById('menu-button').focus();});
 document.getElementById('overlay').addEventListener('click',()=>setMenu(false));
 document.addEventListener('keydown',event=>{
+  if (editor.active) return;
   if (document.querySelector('dialog[open]')) return;
   if(event.key==='Escape'){if(sidebar.classList.contains('open')){setMenu(false);document.getElementById('menu-button').focus();}else if(searchInput.value){searchInput.value='';renderRoute();searchInput.focus();}return;}
   if(sidebar.classList.contains('open')&&event.key==='Tab'){const focusables=[...sidebar.querySelectorAll('a,button,summary,select')].filter(el=>el.getClientRects().length);const first=focusables[0],last=focusables.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}return;}
@@ -297,6 +298,7 @@ window.addEventListener('beforeprint',()=>{document.querySelectorAll('.question,
 window.addEventListener('afterprint',()=>{document.querySelectorAll('.question,.doubao-question,.doubao-supplement').forEach(d=>{d.open=d.dataset.wasOpen==='true';delete d.dataset.wasOpen;});});
 __WORKSPACE_SCRIPT__
 __DOUBAO_SCRIPT__
+__RICH_EDITOR_BUNDLE__
 __EDITOR_SCRIPT__
 __APPEND_SCRIPT__
 __HIGHLIGHTS_SCRIPT__

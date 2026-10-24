@@ -81,20 +81,22 @@ def run():
                 print('PASS: persistent highlights still restore inside formatted text.')
 
                 page.locator('[data-action="edit-page"]').click()
-                expect(page.locator('#editor-status')).to_contain_text('已读取')
+                page.wait_for_function('editor.active && editor.ready && !editor.busy')
                 field = page.locator('[data-field-key="chapter/k01/intro"]')
-                field.evaluate('el=>{el.focus();el.setSelectionRange(el.value.length,el.value.length)}')
+                page.evaluate('editor.instances.get("chapter/k01/intro").view.commands.focus("end")')
                 image_file = Path(directory) / 'diagram.png'
                 subprocess.run([str(PYTHON), '-c', 'from PIL import Image; import sys; Image.new("RGB",(960,320),"#dce8d4").save(sys.argv[1])', str(image_file)], check=True)
                 page.once('dialog', lambda dialog: dialog.accept('检索到生成：流程示意'))
                 with page.expect_file_chooser() as chooser:
-                    field.locator('..').locator('[data-editor-format="image"]').click()
+                    page.locator('[data-editor-format="image"]').click()
                 chooser.value.set_files(str(image_file))
                 expect(page.locator('#editor-status')).to_contain_text('图片已插入草稿')
-                assert '../images/' in field.input_value()
+                assert 'media/' in field.locator('img').get_attribute('src')
                 assert '检索到生成' not in document.read_text()
                 with page.expect_navigation():
                     page.locator('#editor-save').click()
+                page.wait_for_function('editor.active && editor.ready && !editor.busy')
+                page.locator('#editor-close').click()
                 image = page.locator(selector+' img.reading-image')
                 expect(image).to_be_visible()
                 image.evaluate('el=>el.scrollIntoView()')

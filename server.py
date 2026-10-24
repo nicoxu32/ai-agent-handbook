@@ -318,6 +318,10 @@ class HandbookHandler(BaseHTTPRequestHandler):
                     GENERATION_SLOT.release()
             elif path == '/api/local/save':
                 result = local_content.save(ROOT, body)
+            elif path == '/api/local/save-rich':
+                result = local_content.save_rich(ROOT, body)
+            elif path == '/api/local/editor-preview':
+                result = local_content.editor_preview(ROOT, body)
             elif path == '/api/local/format':
                 result = local_content.format_selection(ROOT, body)
             elif path == '/api/local/upload-image':

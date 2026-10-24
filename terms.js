@@ -41,7 +41,7 @@ for (const chapter of DATA.chapters) chapter.search = withChineseTerms(chapter.s
 for (const question of DATA.doubao.questions) question.search = withChineseTerms(question.search);
 
 (() => {
-  const skip = 'script,style,textarea,input,select,pre,code,svg,.term-label,.term-notes,.brand-mark,kbd,[data-raw-text]';
+  const skip = 'script,style,textarea,input,select,pre,code,svg,.term-label,.term-notes,.brand-mark,kbd,[data-raw-text],[contenteditable],.document-toolbar';
   function annotate() {
     observer.disconnect();
     try {

@@ -90,7 +90,11 @@ def run():
 
         # Real pointer selection must work without a script creating the selection.
         page.locator(intro+' p').first.scroll_into_view_if_needed()
-        rect=page.locator(intro+' strong').first.bounding_box()
+        rect=page.locator(intro+' strong').first.evaluate('''el=>{
+          const range=document.createRange();range.selectNodeContents(el);
+          const rect=range.getClientRects()[0];
+          return {x:rect.x,y:rect.y,width:rect.width,height:rect.height};
+        }''')
         page.mouse.move(rect['x']+1,rect['y']+rect['height']/2)
         page.mouse.down()
         page.mouse.move(rect['x']+rect['width']-1,rect['y']+rect['height']/2,steps=12)

@@ -161,6 +161,7 @@ function updatePageHeading() {
   document.title = `${name} · ${project.name} · AI 知识点手册`;
 }
 function renderRoute() {
+  if (editor.active && !leaveEditorForNavigation()) return;
   const requested = location.hash.slice(1) || 'home';
   const aliases = {interview: 'bank', path: 'home', guide: 'home', extra0: 'architecture', extra3: 'catalog', glossary: 'catalog'};
   let route = aliases[requested] || requested;

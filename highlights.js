@@ -164,7 +164,7 @@
   }
 
   function updateSelection() {
-    if (document.querySelector('dialog[open]') || sidebar.classList.contains('open')) return hideToolbar();
+    if (editor.active || document.querySelector('dialog[open]') || sidebar.classList.contains('open')) return hideToolbar();
     const selection = window.getSelection();
     if (!selection?.rangeCount || selection.isCollapsed) return hideToolbar();
     const range = selection.getRangeAt(0);

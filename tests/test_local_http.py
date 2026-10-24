@@ -49,7 +49,7 @@ class LocalHTTPTests(unittest.TestCase):
                 {'X-Handbook-Token': server.SESSION_TOKEN, 'Sec-Fetch-Site': 'cross-site'},
             ]:
                 with self.subTest(headers=list(headers)):
-                    for endpoint in ['save', 'open-document', 'publish', 'followup', 'format', 'upload-image']:
+                    for endpoint in ['save', 'save-rich', 'editor-preview', 'open-document', 'publish', 'followup', 'format', 'upload-image']:
                         request = Request(address+'/api/local/'+endpoint, data=b'{}', headers={'Content-Type':'application/json', **headers})
                         with self.assertRaises(HTTPError) as caught:
                             urlopen(request)

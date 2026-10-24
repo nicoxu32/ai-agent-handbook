@@ -7,7 +7,7 @@ import unittest
 from bs4 import BeautifulSoup
 from PIL import Image
 from image_assets import upload, asset_path, export_images
-from rich_text import format_markdown, render_markdown
+from rich_text import format_markdown, render_markdown, markdown_from_editor
 
 
 def formatted(source, word, style):
@@ -18,6 +18,30 @@ def formatted(source, word, style):
 
 
 class RichTextTests(unittest.TestCase):
+    def test_document_editor_preserves_tables_callouts_images_code_and_line_breaks(self):
+        name = 'b' * 64 + '.jpg'
+        source = f'### 面试问题？\n\n第一行。\n第二行 <u>重点</u>。\n\n> [!SUPPLEMENT]\n>\n> 补充 **解释**。\n\n| 名称 | 说明 |\n| --- | --- |\n| 词元 | 文本单元 |\n\n![流程说明](../images/{name})\n\n```python\nprint(1)\n```'
+        before = BeautifulSoup(render_markdown(source), 'html.parser')
+        converted = markdown_from_editor(str(before))
+        after = BeautifulSoup(render_markdown(converted), 'html.parser')
+        self.assertEqual(before.get_text().split(), after.get_text().split())
+        self.assertIsNotNone(after.select_one('.callout-supplement'))
+        self.assertEqual(after.img['src'], 'media/' + name)
+        self.assertIn('../images/' + name, converted)
+        self.assertEqual(after.select_one('pre code')['class'], ['language-python'])
+        self.assertEqual(len(after.select('table td')), 2)
+        self.assertEqual(after.u.get_text(), '重点')
+
+    def test_editor_conversion_rejects_lossy_tables_and_external_images_and_sanitizes_html(self):
+        for html in ['<table><tr><td colspan="2">合并</td></tr></table>',
+                     '<p><img src="https://example.org/tracker.png"></p>']:
+            with self.assertRaises(ValueError):
+                markdown_from_editor(html)
+        converted = markdown_from_editor('<p onclick="alert(1)">正文 <strong>重点</strong></p><script>alert(1)</script><a href="javascript:alert(1)">链接文字</a>')
+        self.assertIn('**重点**', converted)
+        self.assertNotIn('alert', converted)
+        self.assertNotIn('javascript', converted)
+
     def test_nested_formats_emoji_repeated_words_and_untouched_blocks(self):
         source = '第一段 😀 **已有重点** 和链接 [原文](https://example.org)。\n\n第二段 原文。'
         for style, selector in [('bold', 'strong'), ('underline', 'u'), ('code', 'code'), ('block', '.callout-note')]:
