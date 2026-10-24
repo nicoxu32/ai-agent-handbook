@@ -103,6 +103,24 @@ class LocalContentTests(unittest.TestCase):
             local_content.save_rich(self.root, body)
         self.assertEqual(local_content.document(self.root, 'k01')['revision'], current['revision'])
 
+    def test_insertion_view_and_exact_undo_preserve_original_file(self):
+        path = self.root / 'content/documents/k01.md'
+        before = path.read_bytes()
+        doc = local_content.document(self.root, 'k01')
+        changed = {**doc['values'], 'chapter/k01/intro': doc['values']['chapter/k01/intro'] + '\n\n新增补充。'}
+        result = local_content.save(self.root, {'group': 'k01', 'revision': doc['revision'], 'values': changed, 'includeView': True})
+        self.assertIn('新增补充', result['view']['chapters'][0]['intro'])
+        self.assertIn('新增补充', result['view']['source'])
+        self.assertEqual(len(result['view']['chapters']), 36)
+        undo = {'group': 'k01', 'revision': result['revision'], 'values': doc['values'], 'restoreRevision': doc['revision'], 'includeView': True}
+        for version in ['../.env', 'a' * 64]:
+            with self.assertRaises(ValueError):
+                local_content.save(self.root, {**undo, 'restoreRevision': version})
+        local_content.save(self.root, undo)
+        self.assertEqual(path.read_bytes(), before)
+        with self.assertRaises(ValueError):
+            local_content.save(self.root, undo)
+
     def test_validation_failure_does_not_replace_file(self):
         doc = local_content.document(self.root, 'k01')
         before = (self.root / doc['path']).read_bytes()

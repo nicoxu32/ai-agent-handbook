@@ -164,10 +164,11 @@ def run():
                     time.sleep(.1)
                 responses = []
                 page.on('response', lambda response: responses.append((response.url.rsplit('/', 1)[-1], response.status)) if '/api/local/' in response.url else None)
-                with page.expect_navigation():
-                    page.locator('#append-save').click()
+                page.locator('#append-save').click()
+                expect(page.locator('#append-status')).to_contain_text('已插入原文并保存', timeout=25000)
+                page.locator('#append-close').click()
                 expect(page.locator(block(key))).to_contain_text('本地追加 😀 <script>不会执行</script>。')
-                expect(page.locator(block(key)+' .callout-supplement')).to_contain_text('人工确认的补充')
+                expect(page.locator(block(key)+' .callout-supplement').last).to_contain_text('人工确认的补充')
                 assert page.locator(block(key)+' script').count()==0
                 assert ('document', 403) in responses
                 assert ('status', 200) in responses

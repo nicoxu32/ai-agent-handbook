@@ -11,6 +11,41 @@ import server
 
 
 class LocalHTTPTests(unittest.TestCase):
+    def test_stream_errors_before_and_after_headers_release_generation_slot(self):
+        http = ThreadingHTTPServer(('127.0.0.1', 0), server.HandbookHandler)
+        thread = threading.Thread(target=http.serve_forever, daemon=True)
+        thread.start()
+        address = f'http://127.0.0.1:{http.server_port}'
+
+        def request():
+            return Request(address + '/api/local/followup', data=b'{"stream":true}', headers={
+                'Content-Type': 'application/json', 'X-Handbook-Token': server.SESSION_TOKEN, 'Origin': address})
+
+        def interrupted(body, on_delta):
+            on_delta('已收到的片段')
+            raise server.RequestError(502, '生成中断')
+
+        try:
+            with patch('server.generate_followup', side_effect=server.RequestError(409, '原文已更新')):
+                with self.assertRaises(HTTPError) as caught:
+                    urlopen(request())
+                with caught.exception as response:
+                    self.assertEqual(response.code, 409)
+                    self.assertEqual(json.load(response)['error'], '原文已更新')
+            with patch('server.generate_followup', side_effect=interrupted):
+                with urlopen(request()) as response:
+                    self.assertEqual(response.headers.get_content_type(), 'text/event-stream')
+                    events = [json.loads(line[5:]) for line in response.read().decode().splitlines() if line.startswith('data:')]
+                    self.assertEqual(events, [{'type': 'delta', 'text': '已收到的片段'}, {'type': 'error', 'error': '生成中断'}])
+            self.assertTrue(server.GENERATION_SLOT.acquire(blocking=False))
+            self.assertTrue(server.GENERATION_SLOT.acquire(blocking=False))
+            server.GENERATION_SLOT.release()
+            server.GENERATION_SLOT.release()
+        finally:
+            http.shutdown()
+            http.server_close()
+            thread.join()
+
     def test_expired_session_is_distinct_and_never_executes_operations(self):
         http = ThreadingHTTPServer(('127.0.0.1', 0), server.HandbookHandler)
         thread = threading.Thread(target=http.serve_forever, daemon=True)

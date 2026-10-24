@@ -47,7 +47,7 @@ function editorMessage(message, error = false) {
   status.textContent = message;
   status.classList.toggle('error', error);
 }
-async function localRequest(path, body, signal) {
+async function localRequest(path, body, signal, onDelta) {
   if (!localEditing) throw new Error('请在电脑上打开本地学习手册，再编辑 Markdown 文件。线上网站用于查看已发布内容。');
   const timeout = {publish: 180000, followup: 90000}[path] || 30000;
   const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(timeout)]) : AbortSignal.timeout(timeout);
@@ -63,6 +63,9 @@ async function localRequest(path, body, signal) {
       showPublishStatus(status);
     }
     const response = await fetch('/api/local/' + path, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Handbook-Token': editor.token}, body: JSON.stringify(body), signal: requestSignal});
+    if (response.ok && onDelta && response.headers.get('Content-Type')?.includes('text/event-stream')) {
+      return readFollowupStream(response, onDelta);
+    }
     const result = await response.json();
     // Retry only when the server explicitly rejected the request before executing it.
     if (response.status === 403 && result.code === 'session_expired') {
@@ -211,6 +214,7 @@ function groupForCurrentPage() {
 }
 async function openEditor(group = groupForCurrentPage()) {
   if (!localEditing || editor.busy || editor.active) return;
+  if (typeof appendState !== 'undefined' && appendState.open) closeAppend();
   editor.group = group;
   editor.busy = true;
   editor.ready = false;

@@ -150,6 +150,19 @@ def save(root, body):
             raise ValueError('正文中发现授权凭据，请删除后保存。')
         text = document_text(entry['title'], entry['fields'], body['values'])
         read_document(text, entry['fields'])
+        restore_revision = body.get('restoreRevision')
+        if restore_revision is not None:
+            if not isinstance(restore_revision, str) or not re.fullmatch(r'[a-f0-9]{64}', restore_revision):
+                raise ValueError('撤销版本无效，原文没有改变。')
+            backup = root / '.local/backups' / f'{group}-{restore_revision[:16]}.md'
+            if backup.is_symlink() or not backup.is_file():
+                raise ValueError('撤销备份不存在，请保留追问草稿。')
+            original = backup.read_bytes()
+            if hashlib.sha256(original).hexdigest() != restore_revision:
+                raise ValueError('撤销备份校验失败，原文没有改变。')
+            text = original.decode('utf-8')
+            if read_document(text, entry['fields']) != body['values']:
+                raise ValueError('撤销内容与备份不一致，原文没有改变。')
         path = root / 'content/documents' / (group + '.md')
         # Validate a temporary content tree before replacing the authoritative file.
         with tempfile.TemporaryDirectory() as directory:
@@ -164,7 +177,13 @@ def save(root, body):
             atomic_write(root / '.local/backups' / f'{group}-{backup_id}.md', old)
             atomic_write(path, text.encode())
             atomic_write(root / 'index.html', (staging / 'index.html').read_bytes())
-        return {'saved': True, 'revision': hashlib.sha256(text.encode()).hexdigest(), **status(root)}
+        result = {'saved': True, 'revision': hashlib.sha256(text.encode()).hexdigest(), **status(root)}
+        if body.get('includeView'):
+            # Reuse the validated build so the reader can update without reloading.
+            html = (root / 'index.html').read_text(encoding='utf-8')
+            match = re.search(r'<script id="handbook-data" type="application/json">(.*?)</script>', html, re.S)
+            result['view'] = json.loads(match[1])
+        return result
 
 
 def format_selection(root, body):

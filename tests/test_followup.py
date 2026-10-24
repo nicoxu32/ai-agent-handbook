@@ -1,6 +1,7 @@
 """Validate grounded follow-up requests without network calls or document writes."""
 import copy
 import json
+from io import BytesIO
 import unittest
 from unittest.mock import patch, MagicMock
 from urllib.error import HTTPError
@@ -99,6 +100,30 @@ class ModelTransportTests(unittest.TestCase):
         with patch('server.load_chapters',return_value={'k01':chapter}), patch('server.RECENT_TITLES',{}), patch('server.request_model',return_value=answer):
             result=server.generate_question({'chapterId':'k01','type':'diagnosis'})
             self.assertEqual(result['answer'],answer['answer'])
+
+    def test_stream_requires_completion_and_handles_provider_errors(self):
+        def chunk(text='', reason=None):
+            return ('data: ' + json.dumps({'choices': [{'delta': {'content': text}, 'finish_reason': reason}]}) + '\n\n').encode()
+
+        received = []
+        stream = BytesIO(chunk('第一段。') + chunk('第二段。') + chunk(reason='stop') + b'data: [DONE]\n\n')
+        self.assertEqual(server.read_model_stream(stream, received.append), '第一段。第二段。')
+        self.assertEqual(received, ['第一段。', '第二段。'])
+        for stream in [chunk('未完成。'), chunk('截断。', 'length') + b'data: [DONE]\n\n',
+                       b'data: {"error":{"message":"private provider error"}}\n\n']:
+            with self.assertRaises(server.RequestError) as caught:
+                server.read_model_stream(BytesIO(stream), lambda text: None)
+            self.assertNotIn('private provider', str(caught.exception))
+
+    def test_transport_requests_stream_without_json_mode(self):
+        self.opener.open.return_value.__enter__.return_value = BytesIO(
+            b'data: {"choices":[{"delta":{"content":"streamed"}}]}\n\ndata: [DONE]\n\n')
+        received = []
+        self.assertEqual(server.request_model([], json_output=False, on_delta=received.append), 'streamed')
+        payload = json.loads(self.opener.open.call_args.args[0].data)
+        self.assertTrue(payload['stream'])
+        self.assertNotIn('response_format', payload)
+        self.assertEqual(received, ['streamed'])
 
 
 if __name__ == '__main__':

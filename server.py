@@ -104,7 +104,42 @@ def validate_question(value, previous_titles):
     return {'question': question.strip(), 'answer': answer.strip(), 'followups': [item.strip() for item in followups]}
 
 
-def request_model(messages, json_output=True):
+def read_model_stream(response, on_delta):
+    content, size, finished = '', 0, False
+    while True:
+        line = response.readline(100001)
+        if not line:
+            break
+        size += len(line)
+        if size > 1000000 or len(line) > 100000:
+            raise RequestError(502, '模型返回内容过长，请缩小问题范围后重试。')
+        if not line.startswith(b'data:'):
+            continue
+        data = line[5:].strip()
+        if data == b'[DONE]':
+            finished = True
+            break
+        event = json.loads(data)
+        if event.get('error'):
+            raise RequestError(502, '模型生成中断，已保留收到的内容，请手动重试。')
+        choices = event.get('choices', [])
+        if not choices:
+            continue
+        delta = choices[0].get('delta', {}).get('content')
+        if isinstance(delta, str) and delta:
+            content += delta
+            if len(content) > 8000:
+                raise RequestError(502, '模型回答过长，请缩小问题范围后重试。')
+            on_delta(delta)
+        reason = choices[0].get('finish_reason')
+        if reason and reason != 'stop':
+            raise RequestError(502, '模型回答未完整生成，请缩小问题范围后重试。')
+    if not finished:
+        raise RequestError(502, '模型连接提前结束，已收到的内容仅作草稿，请重试。')
+    return content.strip()
+
+
+def request_model(messages, json_output=True, on_delta=None):
     config = load_config()
     if any(not config[key] for key in ['HANDBOOK_API_BASE_URL', 'HANDBOOK_API_KEY', 'HANDBOOK_MODEL']):
         raise RequestError(503, '尚未配置模型服务，请在电脑上的 .env 文件中填写 API 地址、API Key 和模型名称。')
@@ -114,6 +149,8 @@ def request_model(messages, json_output=True):
     if not address.hostname or address.username or address.password or address.query or address.fragment or (address.scheme != 'https' and not local_http):
         raise RequestError(503, 'API 地址需使用 HTTPS；本机模型服务可以使用 HTTP。')
     payload = {'model': config['HANDBOOK_MODEL'], 'messages': messages}
+    if on_delta:
+        payload['stream'] = True
     if json_output and config['HANDBOOK_JSON_MODE'].lower() in {'1', 'true', 'yes'}:
         payload['response_format'] = {'type': 'json_object'}
     request = Request(base + '/chat/completions', data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + config['HANDBOOK_API_KEY']}, method='POST')
@@ -122,6 +159,8 @@ def request_model(messages, json_output=True):
         handlers.append(ProxyHandler({}))
     try:
         with build_opener(*handlers).open(request, timeout=75) as response:
+            if on_delta:
+                return read_model_stream(response, on_delta)
             raw = response.read(1_000_001)
         if len(raw) > 1_000_000:
             raise RequestError(502, '模型返回内容过长，请缩小问题范围后重试。')
@@ -182,7 +221,7 @@ def generate_question(body):
     return {**question, 'chapterId': chapter_id, 'type': question_type, 'id': secrets.token_hex(8)}
 
 
-def generate_followup(body):
+def generate_followup(body, on_delta=None):
     if not isinstance(body, dict):
         raise RequestError(400, '追问请求格式不正确。')
     group, field, mode = body.get('group'), body.get('field'), body.get('mode')
@@ -229,13 +268,42 @@ def generate_followup(body):
     else:
         prompt = question.strip()
     messages.append({'role': 'user', 'content': prompt})
-    answer = request_model(messages, json_output=False)
+    if on_delta:
+        answer = request_model(messages, json_output=False, on_delta=on_delta)
+    else:
+        answer = request_model(messages, json_output=False)
     if not isinstance(answer, str) or not 20 <= len(answer.strip()) <= 8000:
         raise RequestError(502, '模型未返回完整回答，请重试；原文没有改变。')
     return {'answer': answer.strip(), 'mode': mode}
 
 
 class HandbookHandler(BaseHTTPRequestHandler):
+    def send_followup_stream(self, body):
+        started = False
+
+        def event(value):
+            nonlocal started
+            if not started:
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/event-stream; charset=utf-8')
+                self.send_header('Connection', 'close')
+                self.end_headers()
+                self.close_connection = True
+                started = True
+            self.wfile.write(('data: ' + json.dumps(value, ensure_ascii=False) + '\n\n').encode())
+            self.wfile.flush()
+
+        try:
+            result = generate_followup(body, lambda delta: event({'type': 'delta', 'text': delta}))
+            event({'type': 'done', **result})
+        except (BrokenPipeError, ConnectionResetError):
+            return
+        except Exception as error:
+            if not started:
+                raise
+            message = str(error) if isinstance(error, RequestError) else '生成中断，草稿已保留，请重试。'
+            event({'type': 'error', 'error': message})
+
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
@@ -313,6 +381,9 @@ class HandbookHandler(BaseHTTPRequestHandler):
                 if not GENERATION_SLOT.acquire(blocking=False):
                     raise RequestError(429, '已有模型任务进行中，请稍后重试。')
                 try:
+                    if body.get('stream') is True:
+                        self.send_followup_stream(body)
+                        return
                     result = generate_followup(body)
                 finally:
                     GENERATION_SLOT.release()
