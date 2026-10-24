@@ -12,6 +12,19 @@ import threading
 from content_store import document_text, load_documents, read_document
 
 LOCK = threading.RLock()
+CONTENT_PATHS = ['content/documents', 'content/documents.json', 'content/doubao-interviews.json']
+
+
+def is_publishable_content(path):
+    return path in CONTENT_PATHS[1:] or bool(re.fullmatch(r'content/documents/[a-zA-Z0-9_-]+\.md', path))
+
+
+def check_publish_paths(paths, committed=False):
+    blocked = [path for path in paths if not is_publishable_content(path)]
+    if blocked:
+        location = '尚未推送的提交' if committed else '工作区'
+        raise ValueError(f'{location}还有程序或结构修改，请先处理这些文件，再发布学习内容：' + '、'.join(blocked[:8]))
+
 
 
 def run(root, args, timeout=60):
@@ -125,15 +138,13 @@ def publish(root):
         if run(root, ['git', 'diff', '--cached', '--name-only']):
             raise ValueError('仓库有已暂存的其他修改，请先处理后发布。')
         changed = run(root, ['git', 'status', '--porcelain', '--untracked-files=all']).splitlines()
-        if any(not line[3:].startswith('content/documents/') for line in changed):
-            raise ValueError('仓库还有程序或结构修改，请先完成这些改动，再单独发布学习内容。')
+        check_publish_paths([line[3:] for line in changed])
         run(root, ['git', 'fetch', 'origin'], timeout=45)
         behind = int(run(root, ['git', 'rev-list', '--count', 'HEAD..origin/main']))
         ahead = int(run(root, ['git', 'rev-list', '--count', 'origin/main..HEAD']))
         if ahead:
             committed = run(root, ['git', 'diff', '--name-only', 'origin/main...HEAD']).splitlines()
-            if any(not path.startswith('content/documents/') for path in committed):
-                raise ValueError('本地有尚未发布的程序或结构提交，请先完成代码发布。')
+            check_publish_paths(committed, committed=True)
         if behind and ahead:
             raise ValueError('远端与本地都有新提交，请先合并版本。本地修改已保留。')
         if behind:
@@ -144,9 +155,10 @@ def publish(root):
                 raise ValueError('远端更新涉及本地正在修改的文件，请先合并；没有覆盖本地内容。') from None
         with tempfile.TemporaryDirectory() as directory:
             build(root, Path(directory) / 'index.html', static=True)
-        pending = status(root)['pending']
-        if pending:
-            run(root, ['git', 'add', '--', 'content/documents'])
+        changed = run(root, ['git', 'status', '--porcelain', '--untracked-files=all']).splitlines()
+        check_publish_paths([line[3:] for line in changed])
+        if changed:
+            run(root, ['git', 'add', '--', *CONTENT_PATHS])
             run(root, ['git', 'commit', '-m', 'Update locally edited handbook documents'])
         if status(root)['unpushed']:
             try:
