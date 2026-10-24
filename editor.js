@@ -1,6 +1,6 @@
 const editorRepo = 'nicoxu32/ai-agent-handbook';
 const editor = {base: {}, draft: {}, rich: {}, revision: '', group: '', busy: false, dirty: false,
-  ready: false, token: '', active: false, instances: new Map(), focus: null};
+  ready: false, token: '', active: false, reloading: false, instances: new Map(), focus: null};
 const localEditing = !STATIC_SITE && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 const publishButton = document.querySelector('#publish-content');
 const publishStatus = document.querySelector('#publish-status');
@@ -287,6 +287,8 @@ function closeEditor() {
   window.scrollTo({top, behavior: 'instant'});
 }
 function reloadLocalReading() {
+  // This reload is triggered after a successful local write, so it must not look like data loss.
+  editor.reloading = true;
   sessionStorage.setItem('nico-local-save-scroll', String(scrollY));
   location.reload();
 }
@@ -475,7 +477,7 @@ document.addEventListener('keydown', event => {
 }, true);
 window.addEventListener('beforeunload', event => {
   if (editor.active) persistEditorDraft();
-  if (editor.busy || publishing) { event.preventDefault();event.returnValue = ''; }
+  if ((editor.busy || publishing) && !editor.reloading) { event.preventDefault();event.returnValue = ''; }
 });
 new ResizeObserver(entries => {
   document.documentElement.style.setProperty('--topbar-height', entries[0].target.getBoundingClientRect().height + 'px');

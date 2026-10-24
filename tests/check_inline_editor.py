@@ -55,8 +55,9 @@ def run():
             with sync_playwright() as p:
                 browser=p.chromium.launch(executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
                 page=browser.new_page(viewport={'width':1366,'height':900},reduced_motion='reduce')
-                page.set_default_timeout(25000);errors=[]
+                page.set_default_timeout(25000);errors=[];reload_dialogs=[]
                 page.on('pageerror',lambda error:errors.append(str(error)))
+                page.on('dialog',lambda dialog: reload_dialogs.append(dialog.type) if dialog.type == 'beforeunload' else None)
                 page.route('https://**',lambda route:route.abort())
                 page.goto(url+'/#k01')
                 page.locator('[data-action="edit-page"]').click()
@@ -90,7 +91,9 @@ def run():
                 expect(surface.locator('img')).to_have_count(1)
                 expect(page.locator('#editor-status')).to_contain_text('图片已插入草稿')
                 assert dict(FIELD.findall(document.read_text()))==before
+                reload_dialogs.clear()
                 with page.expect_navigation():page.locator('#editor-save').click()
+                assert reload_dialogs == []
                 page.wait_for_function('editor.active && editor.ready && !editor.busy')
                 expect(page.locator('#editor-status')).to_contain_text('已保存到本地')
                 page.locator('#editor-close').click()
