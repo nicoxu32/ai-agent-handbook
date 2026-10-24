@@ -280,8 +280,11 @@ class HandbookHandler(BaseHTTPRequestHandler):
     def local_post(self):
         origin = self.headers.get('Origin')
         host = self.headers.get('Host', '')
-        if not self.local_request() or (origin and origin != 'http://' + host) or self.headers.get('Sec-Fetch-Site') == 'cross-site' or not secrets.compare_digest(self.headers.get('X-Handbook-Token', ''), SESSION_TOKEN):
+        if not self.local_request() or (origin and origin != 'http://' + host) or self.headers.get('Sec-Fetch-Site') == 'cross-site':
             self.send_json(403, {'error': '本地写入校验失效，请在本机刷新后重试。'})
+            return
+        if not secrets.compare_digest(self.headers.get('X-Handbook-Token', ''), SESSION_TOKEN):
+            self.send_json(403, {'code': 'session_expired', 'error': '本地会话已更新，请重试；当前草稿仍然保留。'})
             return
         try:
             length = int(self.headers.get('Content-Length', '0'))

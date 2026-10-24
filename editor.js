@@ -48,19 +48,29 @@ function editorMessage(message, error = false) {
 }
 async function localRequest(path, body, signal) {
   if (!localEditing) throw new Error('请在电脑上打开本地学习手册，再编辑 Markdown 文件。线上网站用于查看已发布内容。');
-  if (!editor.token) {
-    const response = await fetch('/api/local/status', {cache: 'no-store'});
-    const status = await response.json();
-    if (!response.ok) throw new Error(status.error || '本地服务未就绪。');
-    editor.token = status.token;
-    showPublishStatus(status);
-  }
   const timeout = {publish: 180000, followup: 90000}[path] || 30000;
   const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(timeout)]) : AbortSignal.timeout(timeout);
-  const response = await fetch('/api/local/' + path, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Handbook-Token': editor.token}, body: JSON.stringify(body), signal: requestSignal});
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || '本地操作失败，请保留草稿后重试。');
-  return result;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (!editor.token) {
+      const response = await fetch('/api/local/status', {cache: 'no-store', signal: requestSignal});
+      const status = await response.json();
+      if (!response.ok) throw new Error(status.error || '本地服务未就绪。');
+      if (status.app !== 'nico-handbook-local-v1' || typeof status.token !== 'string' || !status.token) {
+        throw new Error('未连接到本地学习手册服务，请保留草稿后重试。');
+      }
+      editor.token = status.token;
+      showPublishStatus(status);
+    }
+    const response = await fetch('/api/local/' + path, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Handbook-Token': editor.token}, body: JSON.stringify(body), signal: requestSignal});
+    const result = await response.json();
+    // Retry only when the server explicitly rejected the request before executing it.
+    if (response.status === 403 && result.code === 'session_expired') {
+      editor.token = '';
+      if (attempt === 0) continue;
+    }
+    if (!response.ok) throw new Error(result.error || '本地操作失败，请保留草稿后重试。');
+    return result;
+  }
 }
 function showPublishStatus(status) {
   const pending = status.pending || 0;

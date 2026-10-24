@@ -144,11 +144,64 @@ def run():
                     assert footer['x']>=0 and footer['x']+footer['width']<=width
                     page.screenshot(path=f'/tmp/followup-{width}.png')
                 print('PASS: multi-turn context, restored conversation, failed requests retain drafts, editable composition; no file changes before confirmation.')
+                # Restart after composition while the browser still holds the old token and draft.
+                old_token = page.evaluate('editor.token')
+                process.terminate()
+                process.wait(timeout=5)
+                process = subprocess.Popen([str(PYTHON), str(root/'server.py'), '--port', str(port)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                for _ in range(100):
+                    try:
+                        with urllib.request.urlopen(url+'/api/local/status', timeout=1) as response:
+                            if json.load(response)['token'] != old_token:
+                                break
+                    except OSError:
+                        pass
+                    time.sleep(.1)
+                responses = []
+                page.on('response', lambda response: responses.append((response.url.rsplit('/', 1)[-1], response.status)) if '/api/local/' in response.url else None)
                 with page.expect_navigation():
                     page.locator('#append-save').click()
                 expect(page.locator(block(key))).to_contain_text('本地追加 😀 <script>不会执行</script>。')
                 assert page.locator(block(key)+' script').count()==0
+                assert ('document', 403) in responses
+                assert ('status', 200) in responses
+                assert responses.count(('save', 200)) == 1
+                assert (root/'content/documents/k01.md').read_text().count('人工确认的补充') == 1
+                assert git(root, 'rev-parse', 'HEAD') == original_head
+                print('PASS: service restart during an open follow-up keeps the draft; expired session refreshes automatically; append saved exactly once without Git commit.')
                 print('PASS: append writes the same Markdown document and is visible immediately; markup remains literal.')
+
+                # Expiration at the write step also recovers, but other failures must never retry.
+                attempts = []
+                def expired_write(route):
+                    attempts.append(route.request.post_data_json)
+                    if len(attempts) == 1:
+                        route.fulfill(status=403, json={'code':'session_expired', 'error':'expired'})
+                    else:
+                        route.fulfill(json={'saved': True})
+                page.route('**/api/local/save', expired_write)
+                assert page.evaluate("async () => (await localRequest('save', {draft: '原稿保留'})).saved")
+                assert attempts == [{'draft':'原稿保留'}] * 2
+                page.unroute('**/api/local/save', expired_write)
+                for status, code in [(403, None), (409, None), (502, None), (403, 'session_expired')]:
+                    failed = []
+                    def rejected_write(route):
+                        failed.append(route.request.post_data_json)
+                        route.fulfill(status=status, json={'code': code, 'error':'保留草稿'})
+                    page.route('**/api/local/save', rejected_write)
+                    message = page.evaluate("async () => { try { await localRequest('save', {draft: '原稿保留'}); } catch (error) { return error.message; } }")
+                    assert message == '保留草稿'
+                    assert len(failed) == (2 if code == 'session_expired' else 1)
+                    page.unroute('**/api/local/save', rejected_write)
+                disconnected = []
+                def dropped_write(route):
+                    disconnected.append(route.request.post_data_json)
+                    route.abort('connectionreset')
+                page.route('**/api/local/save', dropped_write)
+                assert page.evaluate("async () => { try { await localRequest('save', {}); } catch { return true; } }")
+                assert len(disconnected) == 1
+                page.unroute('**/api/local/save', dropped_write)
+                print('PASS: write-step expiration refreshes once; origin rejection, conflicts, server errors and lost responses never auto-retry; repeated expiration is bounded.')
 
                 page.locator('[data-action="edit-page"]').click()
                 expect(page.locator('#editor-status')).to_contain_text('已读取')

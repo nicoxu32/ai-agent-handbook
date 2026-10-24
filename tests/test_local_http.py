@@ -11,6 +11,31 @@ import server
 
 
 class LocalHTTPTests(unittest.TestCase):
+    def test_expired_session_is_distinct_and_never_executes_operations(self):
+        http = ThreadingHTTPServer(('127.0.0.1', 0), server.HandbookHandler)
+        thread = threading.Thread(target=http.serve_forever, daemon=True)
+        thread.start()
+        address = f'http://127.0.0.1:{http.server_port}'
+        try:
+            with patch('server.local_content.document') as read, patch('server.local_content.save') as save, \
+                    patch('server.local_content.publish') as publish, patch('server.generate_followup') as followup:
+                for endpoint in ['document', 'save', 'publish', 'followup']:
+                    for origin, expected_code in [(address, 'session_expired'), ('https://example.org', None)]:
+                        with self.subTest(endpoint=endpoint, origin=origin):
+                            request = Request(address+'/api/local/'+endpoint, data=b'{}', headers={
+                                'Content-Type': 'application/json', 'X-Handbook-Token': 'old-session', 'Origin': origin})
+                            with self.assertRaises(HTTPError) as caught:
+                                urlopen(request)
+                            with caught.exception as response:
+                                self.assertEqual(response.code, 403)
+                                self.assertEqual(json.load(response).get('code'), expected_code)
+                for operation in [read, save, publish, followup]:
+                    operation.assert_not_called()
+        finally:
+            http.shutdown()
+            http.server_close()
+            thread.join()
+
     def test_write_guards_and_no_arbitrary_file_routes(self):
         http = ThreadingHTTPServer(('127.0.0.1', 0), server.HandbookHandler)
         thread = threading.Thread(target=http.serve_forever, daemon=True)
