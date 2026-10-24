@@ -3508,5 +3508,65 @@
         "multiline": true
       }
     ]
+  },
+  "db-tech-20": {
+    "title": "企业资料问答应该如何选择 Prompt（提示词）、RAG（检索增强生成）和微调？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-20/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-20/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-20/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-21": {
+    "title": "RAG（检索增强生成）里的文档分块有哪些规则和策略？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-21/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-21/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-21/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
+  },
+  "db-tech-22": {
+    "title": "如何开展一次模型微调，从数据准备到评估上线？",
+    "fields": [
+      {
+        "key": "doubao/db-tech-22/title",
+        "label": "面试题",
+        "multiline": false
+      },
+      {
+        "key": "doubao/db-tech-22/framework",
+        "label": "回答框架",
+        "multiline": true
+      },
+      {
+        "key": "doubao/db-tech-22/answer",
+        "label": "口述参考答案",
+        "multiline": true
+      }
+    ]
   }
 }
